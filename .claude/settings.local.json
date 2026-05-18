@@ -11,7 +11,11 @@
       "PowerShell(node --version)",
       "PowerShell(npm --version)",
       "PowerShell($gitPath = \"C:\\\\Program Files\\\\Git\\\\cmd\\\\git.exe\"; if \\(Test-Path $gitPath\\) { \"Found: $gitPath\" } else { Get-ChildItem \"C:\\\\Program Files\\\\Git\" -ErrorAction SilentlyContinue | Select-Object Name })",
-      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; cd \"c:\\\\Users\\\\ASUS\\\\OneDrive\\\\Desktop\\\\SuperKids\"; git init; git add .; git commit -m \"Initial commit: SuperKids project with demo app\")"
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; cd \"c:\\\\Users\\\\ASUS\\\\OneDrive\\\\Desktop\\\\SuperKids\"; git init; git add .; git commit -m \"Initial commit: SuperKids project with demo app\")",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; cd \"c:\\\\Users\\\\ASUS\\\\OneDrive\\\\Desktop\\\\SuperKids\"; git config --global user.email \"infinitelearningthebest@gmail.com\"; git config --global user.name \"SuperKids Dev\"; git commit -m \"Initial commit: SuperKids project with demo app\")",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; cd \"c:\\\\Users\\\\ASUS\\\\OneDrive\\\\Desktop\\\\SuperKids\"; netlify init 2>&1 | Select-Object -First 20)",
+      "PowerShell(Stop-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "PowerShell(\"stopped\")"
     ]
   }
 }

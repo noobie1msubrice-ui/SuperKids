@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-bgLight text-textPrimary font-sans antialiased;
+  }
+
+  /* Visible focus ring for keyboard users (accessibility — doc 06 §7). */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2;
+  }
+}
+
+@layer utilities {
+  /* Star-burst celebration keyframes used by RewardCelebration. */
+  @keyframes star-pop {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.4) rotate(20deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-20vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(540deg);
+      opacity: 0;
+    }
+  }
+
+  .animate-star-pop {
+    animation: star-pop 900ms ease-out forwards;
+  }
+
+  .animate-confetti {
+    animation: confetti-fall 1600ms linear forwards;
+  }
+}

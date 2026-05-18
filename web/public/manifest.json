@@ -1,0 +1,16 @@
+{
+  "name": "SuperKids",
+  "short_name": "SuperKids",
+  "description": "Kids earn Stars for chores and spend them on rewards.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F6F7FB",
+  "theme_color": "#5B5BD6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

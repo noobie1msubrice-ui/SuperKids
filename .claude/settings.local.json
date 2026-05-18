@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git clone --depth 1 https://github.com/multica-ai/andrej-karpathy-skills.git $env:TEMP\\\\akskills 2>&1 | Out-String)",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.claude\" -ErrorAction SilentlyContinue | Select-Object Name | Out-String)",
+      "PowerShell($ProgressPreference='SilentlyContinue'; $dest=\"$env:TEMP\\\\akskills.zip\"; try { Invoke-WebRequest -Uri \"https://codeload.github.com/multica-ai/andrej-karpathy-skills/zip/refs/heads/main\" -OutFile $dest -ErrorAction Stop; \"main OK $\\(\\(Get-Item $dest\\).Length\\) bytes\" } catch { try { Invoke-WebRequest -Uri \"https://codeload.github.com/multica-ai/andrej-karpathy-skills/zip/refs/heads/master\" -OutFile $dest -ErrorAction Stop; \"master OK $\\(\\(Get-Item $dest\\).Length\\) bytes\" } catch { \"FAILED: $\\($_.Exception.Message\\)\" } })",
+      "PowerShell($dest=\"$env:TEMP\\\\akskills_extract\"; if \\(Test-Path $dest\\) { Remove-Item $dest -Recurse -Force }; Expand-Archive -Path \"$env:TEMP\\\\akskills.zip\" -DestinationPath $dest -Force; Get-ChildItem -Path $dest -Recurse | Select-Object FullName | Out-String)",
+      "PowerShell($src=\"$env:TEMP\\\\akskills_extract\\\\andrej-karpathy-skills-main\\\\skills\\\\karpathy-guidelines\"; $dst=\"$env:USERPROFILE\\\\.claude\\\\skills\"; New-Item -ItemType Directory -Force -Path $dst | Out-Null; Copy-Item -Path $src -Destination $dst -Recurse -Force; Get-ChildItem \"$dst\\\\karpathy-guidelines\" | Select-Object FullName | Out-String)",
+      "PowerShell(Remove-Item \"$env:TEMP\\\\akskills.zip\",\"$env:TEMP\\\\akskills_extract\" -Recurse -Force -ErrorAction SilentlyContinue; \"cleaned up\")",
+      "PowerShell(node --version; npm --version; \\(Get-Command firebase -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell($gitPath = \"C:\\\\Program Files\\\\Git\\\\cmd\\\\git.exe\"; if \\(Test-Path $gitPath\\) { \"Found: $gitPath\" } else { Get-ChildItem \"C:\\\\Program Files\\\\Git\" -ErrorAction SilentlyContinue | Select-Object Name })",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; cd \"c:\\\\Users\\\\ASUS\\\\OneDrive\\\\Desktop\\\\SuperKids\"; git init; git add .; git commit -m \"Initial commit: SuperKids project with demo app\")"
+    ]
+  }
+}

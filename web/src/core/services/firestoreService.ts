@@ -1,0 +1,214 @@
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+  type Query,
+} from 'firebase/firestore';
+import { db } from './firebase';
+import { COLLECTIONS } from '../utils/constants';
+import { userProfileConverter, type UserProfile } from '../../models/userProfile';
+import { taskConverter, type Task } from '../../models/task';
+import { storeItemConverter, type StoreItem } from '../../models/storeItem';
+import {
+  backpackItemConverter,
+  type BackpackItem,
+} from '../../models/backpackItem';
+import {
+  transactionConverter,
+  type Transaction,
+} from '../../models/transaction';
+
+const usersCol = collection(db, COLLECTIONS.users).withConverter(
+  userProfileConverter,
+);
+const tasksCol = collection(db, COLLECTIONS.tasks).withConverter(taskConverter);
+const storeItemsCol = collection(db, COLLECTIONS.storeItems).withConverter(
+  storeItemConverter,
+);
+const backpackCol = collection(db, COLLECTIONS.backpackItems).withConverter(
+  backpackItemConverter,
+);
+
+/** Drops keys whose value is `undefined` so Firestore writes stay clean. */
+function defined<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined),
+  ) as Partial<T>;
+}
+
+export const firestoreService = {
+  // ---------- document references ----------
+
+  /** The converted reference to a user's own profile document. */
+  userDocRef(uid: string) {
+    return doc(db, COLLECTIONS.users, uid).withConverter(userProfileConverter);
+  },
+
+  // ---------- queries (read, real-time) ----------
+
+  /** All children of a parent. */
+  childrenQuery(parentId: string): Query<UserProfile> {
+    return query(usersCol, where('parentId', '==', parentId));
+  },
+
+  /** Every task a parent owns, newest first. */
+  parentTasksQuery(parentId: string): Query<Task> {
+    return query(
+      tasksCol,
+      where('parentId', '==', parentId),
+      orderBy('createdAt', 'desc'),
+    );
+  },
+
+  /** Every task assigned to a child, newest first. */
+  childTasksQuery(childId: string): Query<Task> {
+    return query(
+      tasksCol,
+      where('childId', '==', childId),
+      orderBy('createdAt', 'desc'),
+    );
+  },
+
+  /** Every store item a parent owns, newest first. */
+  parentStoreQuery(parentId: string): Query<StoreItem> {
+    return query(
+      storeItemsCol,
+      where('parentId', '==', parentId),
+      orderBy('createdAt', 'desc'),
+    );
+  },
+
+  /** Active store items belonging to a child's parent, newest first. */
+  childStoreQuery(parentId: string): Query<StoreItem> {
+    return query(
+      storeItemsCol,
+      where('parentId', '==', parentId),
+      where('isActive', '==', true),
+      orderBy('createdAt', 'desc'),
+    );
+  },
+
+  /** A child's backpack, newest first. */
+  childBackpackQuery(childId: string): Query<BackpackItem> {
+    return query(
+      backpackCol,
+      where('childId', '==', childId),
+      orderBy('purchasedAt', 'desc'),
+    );
+  },
+
+  /** A child's Star ledger, newest first. */
+  childTransactionsQuery(childId: string): Query<Transaction> {
+    return query(
+      collection(db, COLLECTIONS.users, childId, COLLECTIONS.transactions)
+        .withConverter(transactionConverter),
+      orderBy('createdAt', 'desc'),
+    );
+  },
+
+  // ---------- task writes ----------
+
+  async createTask(input: {
+    parentId: string;
+    childId: string;
+    title: string;
+    description?: string;
+    starReward: number;
+  }): Promise<void> {
+    await addDoc(collection(db, COLLECTIONS.tasks), {
+      ...defined(input),
+      status: 'available',
+      createdAt: serverTimestamp(),
+    });
+  },
+
+  async updateTask(
+    taskId: string,
+    input: { title: string; description?: string; starReward: number },
+  ): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.tasks, taskId), {
+      title: input.title,
+      starReward: input.starReward,
+      description: input.description ?? '',
+    });
+  },
+
+  async deleteTask(taskId: string): Promise<void> {
+    await deleteDoc(doc(db, COLLECTIONS.tasks, taskId));
+  },
+
+  /** Child marks an available task done — moves it to `pending_approval`. */
+  async markTaskDone(taskId: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.tasks, taskId), {
+      status: 'pending_approval',
+      completedAt: serverTimestamp(),
+    });
+  },
+
+  // ---------- store-item writes ----------
+
+  async createStoreItem(input: {
+    parentId: string;
+    name: string;
+    description?: string;
+    starPrice: number;
+    imageUrl?: string;
+    imagePath?: string;
+    isActive: boolean;
+  }): Promise<string> {
+    const ref = await addDoc(collection(db, COLLECTIONS.storeItems), {
+      ...defined(input),
+      createdAt: serverTimestamp(),
+    });
+    return ref.id;
+  },
+
+  async updateStoreItem(
+    itemId: string,
+    input: Partial<{
+      name: string;
+      description: string;
+      starPrice: number;
+      imageUrl: string;
+      imagePath: string;
+      isActive: boolean;
+    }>,
+  ): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.storeItems, itemId), defined(input));
+  },
+
+  async deleteStoreItem(itemId: string): Promise<void> {
+    await deleteDoc(doc(db, COLLECTIONS.storeItems, itemId));
+  },
+
+  // ---------- backpack writes ----------
+
+  /** Child asks a parent to redeem an owned backpack item. */
+  async requestRedeem(backpackItemId: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.backpackItems, backpackItemId), {
+      status: 'redeem_requested',
+      redeemRequestedAt: serverTimestamp(),
+    });
+  },
+
+  /** Parent marks a requested backpack item as redeemed. */
+  async markRedeemed(backpackItemId: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.backpackItems, backpackItemId), {
+      status: 'redeemed',
+      redeemedAt: serverTimestamp(),
+    });
+  },
+
+  // ---------- profile writes ----------
+
+  /** Updates the signed-in user's own display name. */
+  async updateDisplayName(uid: string, displayName: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.users, uid), { displayName });
+  },
+};

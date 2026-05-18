@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "superkids-dev",
+    "dev": "superkids-dev",
+    "prod": "superkids-prod"
+  }
+}

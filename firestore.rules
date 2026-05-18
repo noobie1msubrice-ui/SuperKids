@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function myUid() { return request.auth.uid; }
+    function userDoc(uid) { return get(/databases/$(database)/documents/users/$(uid)).data; }
+    function myRole() { return userDoc(myUid()).role; }
+    function isParent() { return isSignedIn() && myRole() == 'parent'; }
+    function isChild() { return isSignedIn() && myRole() == 'child'; }
+    // true when uid is a child of the signed-in parent
+    function isMyChild(uid) {
+      return isParent() && userDoc(uid).parentId == myUid();
+    }
+    // fields the request changes
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ---------- users ----------
+    match /users/{uid} {
+      allow read: if isSignedIn() && (
+        uid == myUid() ||
+        isMyChild(uid) ||                              // parent reads their child
+        (isChild() && userDoc(myUid()).parentId == uid) // child reads their parent
+      );
+      // Profiles are created by sign-up (parent) or the createChildAccount function.
+      allow create: if isSignedIn() && uid == myUid()
+                    && request.resource.data.role == 'parent';
+      // Self-service updates: only displayName / fcmToken may change.
+      allow update: if isSignedIn() && uid == myUid()
+                    && changedKeys().hasOnly(['displayName', 'fcmToken']);
+      allow delete: if false;  // children removed via deleteChildAccount function
+    }
+
+    // ---------- tasks ----------
+    match /tasks/{taskId} {
+      allow read: if isSignedIn() && (
+        resource.data.parentId == myUid() ||
+        resource.data.childId == myUid()
+      );
+      allow create: if isParent()
+        && request.resource.data.parentId == myUid()
+        && isMyChild(request.resource.data.childId)
+        && request.resource.data.status == 'available'
+        && request.resource.data.starReward is int
+        && request.resource.data.starReward >= 1;
+      // Parent edits/deletes only before completion.
+      allow update, delete: if isParent()
+        && resource.data.parentId == myUid()
+        && resource.data.status != 'completed';
+      // Child may only flip an available task to pending_approval.
+      allow update: if isChild()
+        && resource.data.childId == myUid()
+        && resource.data.status == 'available'
+        && request.resource.data.status == 'pending_approval'
+        && changedKeys().hasOnly(['status', 'completedAt']);
+      // status -> completed happens ONLY via the approveTask function (Admin bypasses rules).
+    }
+
+    // ---------- storeItems ----------
+    match /storeItems/{itemId} {
+      allow read: if isSignedIn() && (
+        resource.data.parentId == myUid() ||
+        (isChild() && resource.data.parentId == userDoc(myUid()).parentId)
+      );
+      allow create: if isParent()
+        && request.resource.data.parentId == myUid()
+        && request.resource.data.starPrice is int
+        && request.resource.data.starPrice >= 1;
+      allow update, delete: if isParent() && resource.data.parentId == myUid();
+    }
+
+    // ---------- backpackItems ----------
+    match /backpackItems/{itemId} {
+      allow read: if isSignedIn() && (
+        resource.data.childId == myUid() ||
+        resource.data.parentId == myUid()
+      );
+      allow create: if false;  // created only by purchaseStoreItem function
+      // Child: owned -> redeem_requested.
+      allow update: if isChild()
+        && resource.data.childId == myUid()
+        && resource.data.status == 'owned'
+        && request.resource.data.status == 'redeem_requested'
+        && changedKeys().hasOnly(['status', 'redeemRequestedAt']);
+      // Parent: redeem_requested -> redeemed.
+      allow update: if isParent()
+        && resource.data.parentId == myUid()
+        && resource.data.status == 'redeem_requested'
+        && request.resource.data.status == 'redeemed'
+        && changedKeys().hasOnly(['status', 'redeemedAt']);
+      allow delete: if false;
+    }
+
+    // ---------- transactions (ledger) ----------
+    match /users/{uid}/transactions/{txnId} {
+      allow read: if isSignedIn() && (uid == myUid() || isMyChild(uid));
+      allow write: if false;  // written only by Cloud Functions
+    }
+  }
+}

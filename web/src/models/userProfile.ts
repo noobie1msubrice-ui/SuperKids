@@ -1,7 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 import { idConverter } from './converter';
 
-export type UserRole = 'parent' | 'child';
+export type UserRole = 'parent' | 'child' | 'admin';
 
 /** One profile per account; the document ID equals the Firebase Auth UID. */
 export interface UserProfile {
@@ -25,4 +25,8 @@ export function isParent(profile: UserProfile): boolean {
 
 export function isChild(profile: UserProfile): boolean {
   return profile.role === 'child';
+}
+
+export function isAdmin(profile: UserProfile): boolean {
+  return profile.role === 'admin';
 }

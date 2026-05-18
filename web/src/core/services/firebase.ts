@@ -2,8 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import {
   initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
+  memoryLocalCache,
   connectFirestoreEmulator,
 } from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
@@ -22,11 +21,11 @@ export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 
-// Offline persistence (doc 02 §7): cached reads survive a brief disconnect.
+// In-memory cache. The IndexedDB-backed persistentLocalCache trips a
+// "FIRESTORE INTERNAL ASSERTION FAILED: Unexpected state" bug in the SDK's
+// watch-stream target tracking; memory cache keeps live listeners working.
 export const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager(),
-  }),
+  localCache: memoryLocalCache(),
 });
 
 // Functions region must match the deployed region (doc 04 §1).

@@ -211,4 +211,36 @@ export const firestoreService = {
   async updateDisplayName(uid: string, displayName: string): Promise<void> {
     await updateDoc(doc(db, COLLECTIONS.users, uid), { displayName });
   },
+
+  // ---------- admin (full-control) queries & writes ----------
+
+  /** Every user account — admin only. */
+  allUsersQuery(): Query<UserProfile> {
+    return query(usersCol);
+  },
+
+  /** Every task in the system, newest first — admin only. */
+  allTasksQuery(): Query<Task> {
+    return query(tasksCol, orderBy('createdAt', 'desc'));
+  },
+
+  /** Every store item in the system, newest first — admin only. */
+  allStoreItemsQuery(): Query<StoreItem> {
+    return query(storeItemsCol, orderBy('createdAt', 'desc'));
+  },
+
+  /** Admin: overwrite a child's Star balance directly. */
+  async adminSetStarBalance(uid: string, starBalance: number): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.users, uid), { starBalance });
+  },
+
+  /** Admin: rename any account. */
+  async adminRenameUser(uid: string, displayName: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.users, uid), { displayName });
+  },
+
+  /** Admin: delete a user's profile document. */
+  async adminDeleteUser(uid: string): Promise<void> {
+    await deleteDoc(doc(db, COLLECTIONS.users, uid));
+  },
 };

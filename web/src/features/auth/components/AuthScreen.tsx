@@ -17,7 +17,7 @@ export function AuthScreen({ title, subtitle, children, footer }: AuthScreenProp
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary">
           <StarIcon className="h-7 w-7 text-star" />
         </span>
-        <span className="text-title text-primary">SuperKids</span>
+        <span className="text-title text-primary">Winkz</span>
       </div>
 
       <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-card">

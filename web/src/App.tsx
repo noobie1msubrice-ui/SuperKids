@@ -21,6 +21,7 @@ import { ChildDetailPage } from './features/family/pages/ChildDetailPage'
 import { BackpackPage } from './features/backpack/pages/BackpackPage'
 import { ParentProfilePage } from './features/profile/pages/ParentProfilePage'
 import { ChildProfilePage } from './features/profile/pages/ChildProfilePage'
+import { AdminPanelPage } from './features/admin/pages/AdminPanelPage'
 
 export function App() {
   return (
@@ -52,6 +53,10 @@ export function App() {
               <Route path="/child/store" element={<ChildStorePage />} />
               <Route path="/child/backpack" element={<BackpackPage />} />
               <Route path="/child/profile" element={<ChildProfilePage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute role="admin" />}>
+              <Route path="/admin" element={<AdminPanelPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

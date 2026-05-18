@@ -30,11 +30,13 @@ export function useRoleLogin(expectedRole: UserRole): RoleLogin {
 
       if (!profile || profile.role !== expectedRole) {
         await authService.logout();
-        setError(
+        const wrongRoleMessage =
           expectedRole === 'child'
             ? COPY.childLoginError
-            : 'That account is not a parent account.',
-        );
+            : expectedRole === 'admin'
+              ? 'That account is not an admin account.'
+              : 'That account is not a parent account.';
+        setError(wrongRoleMessage);
         return;
       }
       navigate(homePathFor(profile.role), { replace: true });

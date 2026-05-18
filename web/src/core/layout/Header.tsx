@@ -3,7 +3,7 @@ import { StarIcon } from '../components/icons';
 import type { UserProfile } from '../../models/userProfile';
 
 /**
- * The persistent app header: the SuperKids logo on the left and, for a child,
+ * The persistent app header: the Winkz logo on the left and, for a child,
  * their current Star balance on the right of every page (doc 06 §3).
  */
 export function Header({ profile }: { profile: UserProfile }) {
@@ -14,7 +14,7 @@ export function Header({ profile }: { profile: UserProfile }) {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
             <StarIcon className="h-5 w-5 text-star" />
           </span>
-          <span className="text-section font-bold text-primary">SuperKids</span>
+          <span className="text-section font-bold text-primary">Winkz</span>
         </div>
         {profile.role === 'child' && (
           <StarChip count={profile.starBalance ?? 0} size="lg" />

@@ -8,9 +8,18 @@ service cloud.firestore {
     function myRole() { return userDoc(myUid()).role; }
     function isParent() { return isSignedIn() && myRole() == 'parent'; }
     function isChild() { return isSignedIn() && myRole() == 'child'; }
-    // true when uid is a child of the signed-in parent
+    function isAdmin() { return isSignedIn() && myRole() == 'admin'; }
+    // Emails permitted to register an admin account.
+    function isAdminEmail() {
+      return request.auth.token.email in [
+        'noobie1msubrice@gmail.com', 'lamlam3019@gmail.com'
+      ];
+    }
+    // true when uid is a child of the signed-in parent.
+    // Uses safe map access — a parent/admin doc has no `parentId` field, and a
+    // bare `.parentId` access throws during list-query rule evaluation.
     function isMyChild(uid) {
-      return isParent() && userDoc(uid).parentId == myUid();
+      return isParent() && userDoc(uid).get('parentId', '') == myUid();
     }
     // fields the request changes
     function changedKeys() {
@@ -19,14 +28,24 @@ service cloud.firestore {
 
     // ---------- users ----------
     match /users/{uid} {
-      allow read: if isSignedIn() && (
-        uid == myUid() ||
-        isMyChild(uid) ||                              // parent reads their child
-        (isChild() && userDoc(myUid()).parentId == uid) // child reads their parent
+      // Admins have full control over every collection.
+      allow read, write: if isAdmin();
+
+      // A signed-in user reads their own profile.
+      allow read: if isSignedIn() && uid == myUid();
+      // A parent reads — and lists — their own children. Pure resource.data so
+      // it is safe for list queries (no cross-doc get, no missing-field access).
+      allow read: if isSignedIn()
+                  && resource.data.get('parentId', '') == myUid();
+      // A child reads their own parent's profile.
+      allow read: if isChild()
+                  && uid == userDoc(myUid()).get('parentId', '');
+      // Profiles are created by sign-up (parent / allow-listed admin) or the
+      // createChildAccount function.
+      allow create: if isSignedIn() && uid == myUid() && (
+        request.resource.data.role == 'parent' ||
+        (request.resource.data.role == 'admin' && isAdminEmail())
       );
-      // Profiles are created by sign-up (parent) or the createChildAccount function.
-      allow create: if isSignedIn() && uid == myUid()
-                    && request.resource.data.role == 'parent';
       // Self-service updates: only displayName / fcmToken may change.
       allow update: if isSignedIn() && uid == myUid()
                     && changedKeys().hasOnly(['displayName', 'fcmToken']);
@@ -35,6 +54,7 @@ service cloud.firestore {
 
     // ---------- tasks ----------
     match /tasks/{taskId} {
+      allow read, write: if isAdmin();
       allow read: if isSignedIn() && (
         resource.data.parentId == myUid() ||
         resource.data.childId == myUid()
@@ -60,9 +80,10 @@ service cloud.firestore {
 
     // ---------- storeItems ----------
     match /storeItems/{itemId} {
+      allow read, write: if isAdmin();
       allow read: if isSignedIn() && (
         resource.data.parentId == myUid() ||
-        (isChild() && resource.data.parentId == userDoc(myUid()).parentId)
+        (isChild() && resource.data.parentId == userDoc(myUid()).get('parentId', ''))
       );
       allow create: if isParent()
         && request.resource.data.parentId == myUid()
@@ -73,6 +94,7 @@ service cloud.firestore {
 
     // ---------- backpackItems ----------
     match /backpackItems/{itemId} {
+      allow read, write: if isAdmin();
       allow read: if isSignedIn() && (
         resource.data.childId == myUid() ||
         resource.data.parentId == myUid()
@@ -95,6 +117,7 @@ service cloud.firestore {
 
     // ---------- transactions (ledger) ----------
     match /users/{uid}/transactions/{txnId} {
+      allow read, write: if isAdmin();
       allow read: if isSignedIn() && (uid == myUid() || isMyChild(uid));
       allow write: if false;  // written only by Cloud Functions
     }

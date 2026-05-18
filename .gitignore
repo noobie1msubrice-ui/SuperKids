@@ -32,6 +32,7 @@ Thumbs.db
 
 # test / coverage
 coverage/
+ui-test-result.png
 
 # Local Netlify folder
 .netlify

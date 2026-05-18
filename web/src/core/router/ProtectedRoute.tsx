@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AppLayout } from '../layout/AppLayout';
 import { LoadingView } from '../components/LoadingView';
@@ -6,6 +6,7 @@ import type { UserRole } from '../../models/userProfile';
 
 /** Path of the home page for each role. */
 export function homePathFor(role: UserRole): string {
+  if (role === 'admin') return '/admin';
   return role === 'parent' ? '/parent/tasks' : '/child/tasks';
 }
 
@@ -25,6 +26,10 @@ export function ProtectedRoute({ role }: { role: UserRole }) {
   }
   if (profile.role !== role) {
     return <Navigate to={homePathFor(profile.role)} replace />;
+  }
+  // The admin panel brings its own chrome — no parent/child header & nav.
+  if (role === 'admin') {
+    return <Outlet />;
   }
   return <AppLayout profile={profile} />;
 }

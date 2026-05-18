@@ -5,6 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Playwright is a dev-only test tool; never download browsers during deploy.
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
 
 [[redirects]]
   from   = "/*"

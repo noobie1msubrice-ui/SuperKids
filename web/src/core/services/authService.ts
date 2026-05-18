@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
-import { COLLECTIONS } from '../utils/constants';
+import { ADMIN_EMAILS, COLLECTIONS } from '../utils/constants';
 import {
   userProfileConverter,
   type UserProfile,
@@ -66,6 +66,43 @@ export const authService = {
         createdAt: serverTimestamp(),
       });
     } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /**
+   * Creates an admin Auth user and its `role: 'admin'` profile. Allowed only
+   * for the email allow-list; Firestore rules enforce the same restriction.
+   */
+  async signUpAdmin(
+    displayName: string,
+    email: string,
+    password: string,
+  ): Promise<void> {
+    const normalized = email.trim().toLowerCase();
+    if (!ADMIN_EMAILS.includes(normalized as (typeof ADMIN_EMAILS)[number])) {
+      throw new AppError(
+        'admin/not-allowed',
+        'This email is not authorized for admin access.',
+      );
+    }
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        normalized,
+        password,
+      );
+      await updateProfile(user, { displayName });
+      await setDoc(doc(db, COLLECTIONS.users, user.uid), {
+        role: 'admin',
+        displayName,
+        email: normalized,
+        createdAt: serverTimestamp(),
+      });
+    } catch (err) {
+      if (err instanceof AppError) {
+        throw err;
+      }
       throw mapAuthError(err);
     }
   },

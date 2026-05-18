@@ -20,6 +20,15 @@ export const LIMITS = {
   imageMaxBytes: 5 * 1024 * 1024,
 } as const;
 
+/**
+ * Emails allowed to register an admin account through the hidden Admin screen.
+ * Enforced both client-side and in Firestore security rules.
+ */
+export const ADMIN_EMAILS = [
+  'noobie1msubrice@gmail.com',
+  'lamlam3019@gmail.com',
+] as const;
+
 /** Shared user-facing copy that appears in more than one place. */
 export const COPY = {
   genericError: 'Something went wrong. Please try again.',

@@ -101,6 +101,12 @@ try {
     await page.getByRole('heading', { name: 'Profile' }).waitFor({ timeout: 8000 })
   })
 
+  // 9b. The Winkz logo links back to the home menu
+  await step('clicking the Winkz logo returns to the home menu', async () => {
+    await page.getByRole('link', { name: 'Go to home' }).click()
+    await page.getByRole('heading', { name: 'Tasks' }).waitFor({ timeout: 8000 })
+  })
+
   // 10. Hidden admin entry point
   await step('typing "admin" opens the Admin dialog', async () => {
     // Not networkidle: a signed-in session keeps a live Firestore stream open.

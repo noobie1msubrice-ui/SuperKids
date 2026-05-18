@@ -7,6 +7,7 @@ import { functionsService } from '../../../core/services/functionsService';
 import { useAction } from '../../../core/hooks/useAction';
 import { rules } from '../../../core/utils/validators';
 import { LIMITS } from '../../../core/utils/constants';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import type { UserProfile } from '../../../models/userProfile';
 
 interface ChildManageModalProps {
@@ -32,6 +33,7 @@ export function ChildManageModal({
   onClose,
   onSaved,
 }: ChildManageModalProps) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -57,7 +59,11 @@ export function ChildManageModal({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={`Manage ${child.displayName}`}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t('family.manageChild', { name: child.displayName })}
+    >
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
@@ -65,20 +71,19 @@ export function ChildManageModal({
       >
         <FormError message={error} />
         <TextField
-          label="Display name"
+          label={t('settings.displayName')}
           error={errors.displayName?.message}
           {...register('displayName', rules.displayName)}
         />
         <TextField
-          label="New password"
+          label={t('family.newPassword')}
           type="password"
-          hint="Leave blank to keep the current password."
           error={errors.newPassword?.message}
           {...register('newPassword', {
             validate: (value) =>
               !value ||
               value.length >= LIMITS.passwordMin ||
-              `Password must be at least ${LIMITS.passwordMin} characters.`,
+              t('settings.passwordTooShort', { min: LIMITS.passwordMin }),
           })}
         />
         <div className="flex gap-3">
@@ -88,10 +93,10 @@ export function ChildManageModal({
             onClick={onClose}
             disabled={pending}
           >
-            Cancel
+            {t('common.cancel')}
           </SecondaryButton>
           <PrimaryButton type="submit" fullWidth loading={pending}>
-            Save
+            {t('common.save')}
           </PrimaryButton>
         </div>
       </form>

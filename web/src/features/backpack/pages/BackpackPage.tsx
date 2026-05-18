@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMyBackpack } from '../hooks/useBackpack'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useToast } from '../../../core/context/ToastContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { StarChip } from '../../../core/components/StarChip'
@@ -14,6 +15,7 @@ import { BACKPACK_STATUS } from '../../../core/utils/statusLabels'
 
 export function BackpackPage() {
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { data: items, loading, error } = useMyBackpack()
   const [busyId, setBusyId] = useState<string | null>(null)
 
@@ -21,9 +23,9 @@ export function BackpackPage() {
     setBusyId(itemId)
     try {
       await firestoreService.requestRedeem(itemId)
-      showToast("Shown to parent — they'll mark it redeemed!", 'success')
+      showToast(t('backpack.shown'), 'success')
     } catch {
-      showToast('Something went wrong. Try again.', 'error')
+      showToast(t('common.errorGeneric'), 'error')
     } finally {
       setBusyId(null)
     }
@@ -31,16 +33,13 @@ export function BackpackPage() {
 
   return (
     <div>
-      <PageHeader title="My Backpack" />
+      <PageHeader title={t('backpack.title')} />
 
       {loading && <LoadingView />}
       {error && <ErrorView />}
 
       {!loading && !error && items.length === 0 && (
-        <EmptyState
-          icon="🎒"
-          message="Your backpack is empty — buy something from the Star Store!"
-        />
+        <EmptyState icon="🎒" message={t('backpack.empty')} />
       )}
 
       {!loading && !error && items.length > 0 && (
@@ -55,10 +54,15 @@ export function BackpackPage() {
                   )}
                   <div className="mt-1">
                     <StarChip count={item.pricePaid} size="sm" />
-                    <span className="ml-1 text-caption text-textMuted">spent</span>
+                    <span className="ml-1 text-caption text-textMuted">
+                      {t('backpack.spent')}
+                    </span>
                   </div>
                 </div>
-                <StatusBadge {...BACKPACK_STATUS[item.status]} />
+                <StatusBadge
+                  label={t(BACKPACK_STATUS[item.status].labelKey)}
+                  tone={BACKPACK_STATUS[item.status].tone}
+                />
               </div>
 
               {item.status === 'owned' && (
@@ -68,7 +72,7 @@ export function BackpackPage() {
                     loading={busyId === item.id}
                     onClick={() => handleRequestRedeem(item.id)}
                   >
-                    Show Parent 🙋
+                    {t('backpack.showParent')}
                   </PrimaryButton>
                 </div>
               )}

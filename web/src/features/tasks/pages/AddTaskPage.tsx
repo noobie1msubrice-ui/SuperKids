@@ -5,6 +5,7 @@ import { useAuth } from '../../../core/context/AuthContext'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useChildren } from '../../family/hooks/useChildren'
 import { useToast } from '../../../core/context/ToastContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { TextField } from '../../../core/components/TextField'
@@ -24,6 +25,7 @@ export function AddTaskPage() {
   const navigate = useNavigate()
   const { profile } = useAuth()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { children } = useChildren()
   const [pending, setPending] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -47,7 +49,7 @@ export function AddTaskPage() {
         description: data.description.trim() || undefined,
         starReward: data.starReward,
       })
-      showToast('Task added!', 'success')
+      showToast(t('tasks.taskAdded'), 'success')
       navigate('/parent/tasks')
     } catch {
       setFormError(COPY.genericError)
@@ -58,22 +60,22 @@ export function AddTaskPage() {
 
   return (
     <div>
-      <PageHeader title="Add Task" />
+      <PageHeader title={t('tasks.addTask')} />
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
           <FormError message={formError} />
 
           <TextField
-            label="Task title"
+            label={t('tasks.title')}
             error={errors.title?.message}
             {...register('title', {
-              required: 'Please enter a title.',
-              maxLength: { value: LIMITS.titleMax, message: `Title must be ${LIMITS.titleMax} chars or fewer.` },
+              required: t('tasks.enterTitle'),
+              maxLength: { value: LIMITS.titleMax, message: `Max ${LIMITS.titleMax} characters.` },
             })}
           />
 
           <TextField
-            label="Description (optional)"
+            label={t('tasks.description')}
             error={errors.description?.message}
             {...register('description', {
               maxLength: { value: LIMITS.descriptionMax, message: `Description must be ${LIMITS.descriptionMax} chars or fewer.` },
@@ -86,7 +88,7 @@ export function AddTaskPage() {
             rules={{ min: { value: LIMITS.starRewardMin, message: 'Must be at least 1 Star.' } }}
             render={({ field }) => (
               <NumberStepper
-                label="Star reward"
+                label={t('tasks.starReward')}
                 value={field.value}
                 onChange={field.onChange}
                 min={LIMITS.starRewardMin}
@@ -99,14 +101,14 @@ export function AddTaskPage() {
 
           <div className="flex flex-col gap-1">
             <label className="text-body font-semibold" htmlFor="childId">
-              Assign to
+              {t('tasks.assignTo')}
             </label>
             <select
               id="childId"
               className="rounded-xl border-2 border-textMuted/30 bg-surface p-3 text-body focus:border-primary focus:outline-none"
-              {...register('childId', { required: 'Please choose a child.' })}
+              {...register('childId', { required: t('tasks.chooseChildError') })}
             >
-              <option value="">Choose a child…</option>
+              <option value="">{t('tasks.chooseChild')}</option>
               {children.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.displayName}
@@ -125,10 +127,10 @@ export function AddTaskPage() {
               onClick={() => navigate('/parent/tasks')}
               disabled={pending}
             >
-              Cancel
+              {t('common.cancel')}
             </SecondaryButton>
             <PrimaryButton type="submit" fullWidth loading={pending}>
-              Add Task
+              {t('tasks.addTask')}
             </PrimaryButton>
           </div>
         </form>

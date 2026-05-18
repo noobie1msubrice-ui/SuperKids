@@ -3,6 +3,7 @@ import { useChildStore } from '../hooks/useStore'
 import { functionsService } from '../../../core/services/functionsService'
 import { useAuth } from '../../../core/context/AuthContext'
 import { useToast } from '../../../core/context/ToastContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { StarChip } from '../../../core/components/StarChip'
@@ -16,6 +17,7 @@ import type { StoreItem } from '../../../models/storeItem'
 export function ChildStorePage() {
   const { profile } = useAuth()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { data: items, loading, error } = useChildStore()
   const [buyTarget, setBuyTarget] = useState<StoreItem | null>(null)
   const [buying, setBuying] = useState(false)
@@ -27,7 +29,7 @@ export function ChildStorePage() {
     setBuying(true)
     try {
       const result = await functionsService.purchaseStoreItem({ storeItemId: buyTarget.id })
-      showToast(`Bought! New balance: ${result.newBalance} ⭐`, 'success')
+      showToast(t('store.bought', { count: result.newBalance }), 'success')
       setBuyTarget(null)
     } catch (err) {
       showToast((err as Error).message, 'error')
@@ -38,13 +40,13 @@ export function ChildStorePage() {
 
   return (
     <div>
-      <PageHeader title="Star Store" />
+      <PageHeader title={t('store.starStore')} />
 
       {loading && <LoadingView />}
       {error && <ErrorView />}
 
       {!loading && !error && items.length === 0 && (
-        <EmptyState icon="🏪" message="The store is empty — check back later!" />
+        <EmptyState icon="🏪" message={t('store.emptyChild')} />
       )}
 
       {!loading && !error && items.length > 0 && (
@@ -69,7 +71,9 @@ export function ChildStorePage() {
                   onClick={() => canAfford && setBuyTarget(item)}
                   disabled={!canAfford}
                 >
-                  {canAfford ? 'Buy ✨' : `Need ${item.starPrice - balance} more ⭐`}
+                  {canAfford
+                    ? t('store.buy')
+                    : t('store.needMore', { count: item.starPrice - balance })}
                 </button>
               </Card>
             )
@@ -85,17 +89,21 @@ export function ChildStorePage() {
         {buyTarget && (
           <div className="flex flex-col gap-4">
             <p className="text-body text-textMuted">
-              Buy for <span className="font-bold text-textPrimary">⭐ {buyTarget.starPrice}</span>?
+              {t('store.buyFor')}{' '}
+              <span className="font-bold text-textPrimary">⭐ {buyTarget.starPrice}</span>?
             </p>
             <p className="text-caption text-textMuted">
-              You have {balance} ⭐ → will have {balance - buyTarget.starPrice} ⭐
+              {t('store.balanceAfter', {
+                before: balance,
+                after: balance - buyTarget.starPrice,
+              })}
             </p>
             <div className="flex gap-3">
               <SecondaryButton fullWidth onClick={() => setBuyTarget(null)} disabled={buying}>
-                Cancel
+                {t('common.cancel')}
               </SecondaryButton>
               <PrimaryButton fullWidth loading={buying} onClick={handleBuy}>
-                Buy! ✨
+                {t('store.buyConfirm')}
               </PrimaryButton>
             </div>
           </div>

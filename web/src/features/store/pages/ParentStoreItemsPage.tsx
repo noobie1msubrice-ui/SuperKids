@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useParentStore } from '../hooks/useStore'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useToast } from '../../../core/context/ToastContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { StarChip } from '../../../core/components/StarChip'
@@ -16,6 +17,7 @@ import type { StoreItem } from '../../../models/storeItem'
 export function ParentStoreItemsPage() {
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { data: items, loading, error } = useParentStore()
   const [deleteTarget, setDeleteTarget] = useState<StoreItem | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -25,10 +27,10 @@ export function ParentStoreItemsPage() {
     setDeleting(true)
     try {
       await firestoreService.deleteStoreItem(deleteTarget.id)
-      showToast('Item removed.', 'info')
+      showToast(t('store.itemRemoved'), 'info')
       setDeleteTarget(null)
     } catch {
-      showToast('Something went wrong.', 'error')
+      showToast(t('common.errorGeneric'), 'error')
     } finally {
       setDeleting(false)
     }
@@ -37,19 +39,19 @@ export function ParentStoreItemsPage() {
   async function toggleActive(item: StoreItem): Promise<void> {
     try {
       await firestoreService.updateStoreItem(item.id, { isActive: !item.isActive })
-      showToast(item.isActive ? 'Item hidden from kids.' : 'Item visible to kids.', 'success')
+      showToast(item.isActive ? t('store.itemHidden') : t('store.itemVisible'), 'success')
     } catch {
-      showToast('Something went wrong.', 'error')
+      showToast(t('common.errorGeneric'), 'error')
     }
   }
 
   return (
     <div>
       <PageHeader
-        title="Store"
+        title={t('store.title')}
         action={
           <PrimaryButton className="min-h-[44px] px-4" onClick={() => navigate('/parent/store/add')}>
-            Add Item
+            {t('store.addItem')}
           </PrimaryButton>
         }
       />
@@ -60,10 +62,10 @@ export function ParentStoreItemsPage() {
       {!loading && !error && items.length === 0 && (
         <EmptyState
           icon="🏪"
-          message="Your store is empty — add items kids can buy with Stars."
+          message={t('store.emptyParent')}
           action={
             <PrimaryButton onClick={() => navigate('/parent/store/add')}>
-              Add Item
+              {t('store.addItem')}
             </PrimaryButton>
           }
         />
@@ -88,7 +90,7 @@ export function ParentStoreItemsPage() {
                     item.isActive ? 'bg-success/15 text-success' : 'bg-textMuted/15 text-textMuted'
                   }`}
                 >
-                  {item.isActive ? 'Active' : 'Hidden'}
+                  {item.isActive ? t('store.active') : t('store.hidden')}
                 </span>
               </div>
 
@@ -97,19 +99,19 @@ export function ParentStoreItemsPage() {
                   className="min-h-[40px] px-3 text-caption"
                   onClick={() => navigate(`/parent/store/${item.id}/edit`)}
                 >
-                  Edit
+                  {t('common.edit')}
                 </SecondaryButton>
                 <SecondaryButton
                   className="min-h-[40px] px-3 text-caption"
                   onClick={() => toggleActive(item)}
                 >
-                  {item.isActive ? 'Hide' : 'Show'}
+                  {item.isActive ? t('store.hide') : t('store.show')}
                 </SecondaryButton>
                 <DangerButton
                   className="min-h-[40px] px-3 text-caption"
                   onClick={() => setDeleteTarget(item)}
                 >
-                  Delete
+                  {t('common.delete')}
                 </DangerButton>
               </div>
             </Card>
@@ -119,9 +121,10 @@ export function ParentStoreItemsPage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title="Delete item?"
-        message={`Remove "${deleteTarget?.name}" from the store? Kids who already bought it keep it in their backpack.`}
-        confirmLabel="Delete"
+        title={t('store.deleteConfirmTitle')}
+        message={t('store.deleteConfirmMsg', { name: deleteTarget?.name ?? '' })}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
         danger
         loading={deleting}
         onConfirm={handleDelete}

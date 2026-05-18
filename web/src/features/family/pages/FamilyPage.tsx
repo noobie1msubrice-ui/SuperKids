@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useChildren } from '../hooks/useChildren';
 import { ChildCard } from '../components/ChildCard';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
 import { PrimaryButton } from '../../../core/components/Button';
 import { LoadingView } from '../../../core/components/LoadingView';
@@ -10,18 +11,19 @@ import { EmptyState } from '../../../core/components/EmptyState';
 /** Parent Family tab: the list of children with an Add Child button (doc 06 §5.5). */
 export function FamilyPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { children, loading, error } = useChildren();
 
   return (
     <div>
       <PageHeader
-        title="Family"
+        title={t('family.title')}
         action={
           <PrimaryButton
             className="min-h-[44px] px-4"
             onClick={() => navigate('/parent/family/add')}
           >
-            Add Child
+            {t('family.addChild')}
           </PrimaryButton>
         }
       />
@@ -30,10 +32,7 @@ export function FamilyPage() {
       {error && <ErrorView />}
 
       {!loading && !error && children.length === 0 && (
-        <EmptyState
-          icon="👶"
-          message="Add your first child to get started."
-        />
+        <EmptyState icon="👶" message={t('family.empty')} />
       )}
 
       {!loading && !error && children.length > 0 && (

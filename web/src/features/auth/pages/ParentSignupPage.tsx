@@ -8,6 +8,7 @@ import { PrimaryButton } from '../../../core/components/Button';
 import { FormError } from '../../../core/components/FormError';
 import { rules } from '../../../core/utils/validators';
 import { COPY } from '../../../core/utils/constants';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 
 interface SignupForm {
   displayName: string;
@@ -25,6 +26,7 @@ export function ParentSignupPage() {
     formState: { errors },
   } = useForm<SignupForm>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,12 +45,12 @@ export function ParentSignupPage() {
 
   return (
     <AuthScreen
-      title="Create your account"
+      title={t('auth.createYourAccount')}
       footer={
         <span className="text-textMuted">
-          Already have one?{' '}
+          {t('auth.alreadyHaveOne')}{' '}
           <Link to="/parent/login" className="font-bold text-primary underline">
-            Log in
+            {t('auth.logInLink')}
           </Link>
         </span>
       }
@@ -60,38 +62,38 @@ export function ParentSignupPage() {
       >
         <FormError message={error} />
         <TextField
-          label="Your name"
+          label={t('auth.yourName')}
           autoComplete="name"
           error={errors.displayName?.message}
           {...register('displayName', rules.displayName)}
         />
         <TextField
-          label="Email"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           error={errors.email?.message}
           {...register('email', rules.email)}
         />
         <TextField
-          label="Password"
+          label={t('auth.password')}
           type="password"
           autoComplete="new-password"
           error={errors.password?.message}
           {...register('password', rules.password)}
         />
         <TextField
-          label="Confirm password"
+          label={t('auth.confirmPassword')}
           type="password"
           autoComplete="new-password"
           error={errors.confirmPassword?.message}
           {...register('confirmPassword', {
-            required: 'Please confirm your password.',
+            required: t('auth.confirmYourPassword'),
             validate: (value) =>
-              value === watch('password') || 'Those passwords do not match.',
+              value === watch('password') || t('auth.passwordsMismatch'),
           })}
         />
         <PrimaryButton type="submit" fullWidth loading={pending}>
-          Create Account
+          {t('auth.createAccount')}
         </PrimaryButton>
       </form>
     </AuthScreen>

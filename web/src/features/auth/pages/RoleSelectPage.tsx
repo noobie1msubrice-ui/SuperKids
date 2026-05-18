@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthScreen } from '../components/AuthScreen';
 import { AdminAuthModal } from '../../admin/components/AdminAuthModal';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 
 /** The first screen: choose the Parent or Kid experience (doc 06 §4.2). */
 export function RoleSelectPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [adminOpen, setAdminOpen] = useState(false);
 
   // Hidden entry point: typing "admin" anywhere on this screen opens the
@@ -26,7 +28,7 @@ export function RoleSelectPage() {
 
   return (
     <>
-      <AuthScreen title="Who's using Winkz?">
+      <AuthScreen title={t('role.title')}>
       <div className="flex flex-col gap-3">
         <button
           type="button"
@@ -36,7 +38,7 @@ export function RoleSelectPage() {
           <span className="text-4xl" aria-hidden>
             👨‍👩‍👧
           </span>
-          <span className="text-section">I'm a Parent</span>
+          <span className="text-section">{t('role.parent')}</span>
         </button>
 
         <button
@@ -47,7 +49,7 @@ export function RoleSelectPage() {
           <span className="text-4xl" aria-hidden>
             🧒
           </span>
-          <span className="text-section">I'm a Kid</span>
+          <span className="text-section">{t('role.child')}</span>
         </button>
       </div>
       </AuthScreen>

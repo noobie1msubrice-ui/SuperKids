@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './core/context/AuthContext'
 import { ToastProvider } from './core/context/ToastContext'
+import { LanguageProvider } from './core/i18n/LanguageContext'
 import { ProtectedRoute } from './core/router/ProtectedRoute'
 import { RootRedirect } from './core/router/RootRedirect'
 import { NotFoundPage } from './core/router/NotFoundPage'
@@ -26,7 +27,8 @@ import { AdminPanelPage } from './features/admin/pages/AdminPanelPage'
 export function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
         <ToastProvider>
           <Routes>
             <Route path="/" element={<RootRedirect />} />
@@ -62,7 +64,8 @@ export function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </ToastProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   )
 }

@@ -5,6 +5,7 @@ import { useAuth } from '../../../core/context/AuthContext'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useParentStore } from '../hooks/useStore'
 import { useToast } from '../../../core/context/ToastContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { TextField } from '../../../core/components/TextField'
@@ -26,6 +27,7 @@ export function AddEditStoreItemPage() {
   const navigate = useNavigate()
   const { profile } = useAuth()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { data: items } = useParentStore()
   const [pending, setPending] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -72,7 +74,7 @@ export function AddEditStoreItemPage() {
           isActive: data.isActive,
         })
       }
-      showToast(isEdit ? 'Item updated.' : 'Item added!', 'success')
+      showToast(isEdit ? t('store.itemUpdated') : t('store.itemAdded'), 'success')
       navigate('/parent/store')
     } catch {
       setFormError(COPY.genericError)
@@ -83,22 +85,22 @@ export function AddEditStoreItemPage() {
 
   return (
     <div>
-      <PageHeader title={isEdit ? 'Edit Item' : 'Add Item'} />
+      <PageHeader title={isEdit ? t('store.editItem') : t('store.addItem')} />
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
           <FormError message={formError} />
 
           <TextField
-            label="Item name"
+            label={t('store.itemName')}
             error={errors.name?.message}
             {...register('name', {
-              required: 'Please enter a name.',
-              maxLength: { value: LIMITS.itemNameMax, message: `Name must be ${LIMITS.itemNameMax} chars or fewer.` },
+              required: t('store.enterName'),
+              maxLength: { value: LIMITS.itemNameMax, message: `Max ${LIMITS.itemNameMax} characters.` },
             })}
           />
 
           <TextField
-            label="Description (optional)"
+            label={t('store.description')}
             error={errors.description?.message}
             {...register('description', {
               maxLength: { value: LIMITS.descriptionMax, message: `Description must be ${LIMITS.descriptionMax} chars or fewer.` },
@@ -111,7 +113,7 @@ export function AddEditStoreItemPage() {
             rules={{ min: { value: LIMITS.starPriceMin, message: 'Must be at least 1 Star.' } }}
             render={({ field }) => (
               <NumberStepper
-                label="Star price"
+                label={t('store.starPrice')}
                 value={field.value}
                 onChange={field.onChange}
                 min={LIMITS.starPriceMin}
@@ -128,7 +130,7 @@ export function AddEditStoreItemPage() {
               className="h-4 w-4 accent-primary"
               {...register('isActive')}
             />
-            Visible to kids
+            {t('store.visibleToKids')}
           </label>
 
           <div className="flex gap-3">
@@ -138,10 +140,10 @@ export function AddEditStoreItemPage() {
               onClick={() => navigate('/parent/store')}
               disabled={pending}
             >
-              Cancel
+              {t('common.cancel')}
             </SecondaryButton>
             <PrimaryButton type="submit" fullWidth loading={pending}>
-              {isEdit ? 'Save' : 'Add Item'}
+              {isEdit ? t('common.save') : t('store.addItem')}
             </PrimaryButton>
           </div>
         </form>

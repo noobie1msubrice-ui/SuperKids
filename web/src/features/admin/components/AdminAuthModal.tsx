@@ -9,6 +9,7 @@ import { useRoleLogin } from '../../auth/hooks/useRoleLogin'
 import { authService } from '../../../core/services/authService'
 import { rules } from '../../../core/utils/validators'
 import { COPY } from '../../../core/utils/constants'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 
 interface AdminAuthModalProps {
   open: boolean
@@ -27,6 +28,7 @@ const TAB_BASE = 'flex-1 rounded-lg py-2 text-body font-bold transition-colors'
 /** The hidden Admin login / sign-up dialog (opened by typing "admin"). */
 export function AdminAuthModal({ open, onClose }: AdminAuthModalProps) {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const login = useRoleLogin('admin')
   const [signupPending, setSignupPending] = useState(false)
@@ -71,21 +73,21 @@ export function AdminAuthModal({ open, onClose }: AdminAuthModalProps) {
   const error = mode === 'login' ? login.error : signupError
 
   return (
-    <Modal open={open} onClose={onClose} title="Admin">
+    <Modal open={open} onClose={onClose} title={t('admin.dialogTitle')}>
       <div className="mb-5 flex gap-1 rounded-xl bg-bgLight p-1">
         <button
           type="button"
           onClick={() => switchMode('login')}
           className={`${TAB_BASE} ${mode === 'login' ? 'bg-surface text-primary shadow-card' : 'text-textMuted'}`}
         >
-          Log In
+          {t('auth.logIn')}
         </button>
         <button
           type="button"
           onClick={() => switchMode('signup')}
           className={`${TAB_BASE} ${mode === 'signup' ? 'bg-surface text-primary shadow-card' : 'text-textMuted'}`}
         >
-          Sign Up
+          {t('admin.signUp')}
         </button>
       </div>
 
@@ -98,14 +100,14 @@ export function AdminAuthModal({ open, onClose }: AdminAuthModalProps) {
 
         {mode === 'signup' && (
           <TextField
-            label="Your name"
+            label={t('auth.yourName')}
             error={errors.displayName?.message}
             {...register('displayName', rules.displayName)}
           />
         )}
 
         <TextField
-          label="Email"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           error={errors.email?.message}
@@ -113,32 +115,32 @@ export function AdminAuthModal({ open, onClose }: AdminAuthModalProps) {
         />
 
         <TextField
-          label="Password"
+          label={t('auth.password')}
           type="password"
           error={errors.password?.message}
           {...register(
             'password',
             mode === 'signup'
               ? rules.password
-              : { required: 'Please enter a password.' },
+              : { required: t('auth.enterPassword') },
           )}
         />
 
         {mode === 'signup' && (
           <TextField
-            label="Confirm password"
+            label={t('auth.confirmPassword')}
             type="password"
             error={errors.confirmPassword?.message}
             {...register('confirmPassword', {
-              required: 'Please confirm your password.',
+              required: t('auth.confirmYourPassword'),
               validate: (value) =>
-                value === watch('password') || 'Those passwords do not match.',
+                value === watch('password') || t('auth.passwordsMismatch'),
             })}
           />
         )}
 
         <PrimaryButton type="submit" fullWidth loading={pending}>
-          {mode === 'login' ? 'Log In' : 'Create Admin Account'}
+          {mode === 'login' ? t('auth.logIn') : t('admin.createAdminAccount')}
         </PrimaryButton>
       </form>
     </Modal>

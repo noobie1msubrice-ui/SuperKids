@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { StarChip } from '../components/StarChip';
 import { StarIcon } from '../components/icons';
 import { homePathFor } from '../router/ProtectedRoute';
+import { useTranslation } from '../i18n/LanguageContext';
 import type { UserProfile } from '../../models/userProfile';
 
 /**
@@ -10,12 +11,13 @@ import type { UserProfile } from '../../models/userProfile';
  * The logo links back to the role's home menu (tasks page).
  */
 export function Header({ profile }: { profile: UserProfile }) {
+  const { t } = useTranslation();
   return (
     <header className="bg-surface shadow-card">
       <div className="mx-auto flex max-w-content items-center justify-between px-4 py-3">
         <Link
           to={homePathFor(profile.role)}
-          aria-label="Go to home"
+          aria-label={t('nav.home')}
           className="flex items-center gap-2 rounded-lg transition-opacity hover:opacity-80"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">

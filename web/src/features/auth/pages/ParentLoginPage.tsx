@@ -5,6 +5,7 @@ import { useRoleLogin } from '../hooks/useRoleLogin';
 import { TextField } from '../../../core/components/TextField';
 import { PrimaryButton } from '../../../core/components/Button';
 import { FormError } from '../../../core/components/FormError';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { rules } from '../../../core/utils/validators';
 
 interface LoginForm {
@@ -20,15 +21,16 @@ export function ParentLoginPage() {
     formState: { errors },
   } = useForm<LoginForm>();
   const { submit, pending, error } = useRoleLogin('parent');
+  const { t } = useTranslation();
 
   return (
     <AuthScreen
-      title="Parent Log In"
+      title={t('auth.parentLogIn')}
       footer={
         <span className="text-textMuted">
-          New here?{' '}
+          {t('auth.newHere')}{' '}
           <Link to="/parent/signup" className="font-bold text-primary underline">
-            Create an account
+            {t('auth.createAnAccount')}
           </Link>
         </span>
       }
@@ -40,21 +42,21 @@ export function ParentLoginPage() {
       >
         <FormError message={error} />
         <TextField
-          label="Email"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           error={errors.email?.message}
           {...register('email', rules.email)}
         />
         <TextField
-          label="Password"
+          label={t('auth.password')}
           type="password"
           autoComplete="current-password"
           error={errors.password?.message}
-          {...register('password', { required: 'Please enter a password.' })}
+          {...register('password', { required: t('auth.enterPassword') })}
         />
         <PrimaryButton type="submit" fullWidth loading={pending}>
-          Log In
+          {t('auth.logIn')}
         </PrimaryButton>
       </form>
     </AuthScreen>

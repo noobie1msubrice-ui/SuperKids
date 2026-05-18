@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { functionsService } from '../../../core/services/functionsService';
 import { useAction } from '../../../core/hooks/useAction';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
 import { TextField } from '../../../core/components/TextField';
 import { PrimaryButton, SecondaryButton } from '../../../core/components/Button';
@@ -19,6 +20,7 @@ interface AddChildForm {
 /** Parent adds a child account via the createChildAccount function (doc 06 §5.6). */
 export function AddChildPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -43,24 +45,23 @@ export function AddChildPage() {
   if (created) {
     return (
       <div>
-        <PageHeader title="Child added!" />
+        <PageHeader title={t('family.childAdded')} />
         <Card>
           <p className="mb-4 text-body">
-            <strong>{created.displayName}</strong> can now log in as a Kid with
-            this email and password:
+            {t('family.childCanLogIn', { name: created.displayName })}
           </p>
           <dl className="mb-5 space-y-2 rounded-xl bg-bgLight p-4 text-body">
             <div className="flex justify-between gap-4">
-              <dt className="text-textMuted">Email</dt>
+              <dt className="text-textMuted">{t('auth.email')}</dt>
               <dd className="break-all font-semibold">{created.email}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-textMuted">Password</dt>
+              <dt className="text-textMuted">{t('auth.password')}</dt>
               <dd className="font-semibold">{created.password}</dd>
             </div>
           </dl>
           <PrimaryButton fullWidth onClick={() => navigate('/parent/family')}>
-            Done
+            {t('common.done')}
           </PrimaryButton>
         </Card>
       </div>
@@ -69,7 +70,7 @@ export function AddChildPage() {
 
   return (
     <div>
-      <PageHeader title="Add a Child" />
+      <PageHeader title={t('family.addAChild')} />
       <Card>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -78,19 +79,19 @@ export function AddChildPage() {
         >
           <FormError message={error} />
           <TextField
-            label="Child's name"
+            label={t('family.childName')}
             error={errors.displayName?.message}
             {...register('displayName', rules.displayName)}
           />
           <TextField
-            label="Login email"
+            label={t('family.loginEmail')}
             type="email"
-            hint="The child uses this to log in on the Kid path."
+            hint={t('family.loginEmailHint')}
             error={errors.email?.message}
             {...register('email', rules.email)}
           />
           <TextField
-            label="Password"
+            label={t('auth.password')}
             type={showPassword ? 'text' : 'password'}
             error={errors.password?.message}
             {...register('password', rules.password)}
@@ -102,7 +103,7 @@ export function AddChildPage() {
               onChange={(e) => setShowPassword(e.target.checked)}
               className="h-4 w-4"
             />
-            Show password
+            {t('family.showPassword')}
           </label>
           <div className="flex gap-3">
             <SecondaryButton
@@ -111,10 +112,10 @@ export function AddChildPage() {
               onClick={() => navigate('/parent/family')}
               disabled={pending}
             >
-              Cancel
+              {t('common.cancel')}
             </SecondaryButton>
             <PrimaryButton type="submit" fullWidth loading={pending}>
-              Create Account
+              {t('auth.createAccount')}
             </PrimaryButton>
           </div>
         </form>

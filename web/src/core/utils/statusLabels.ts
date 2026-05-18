@@ -4,20 +4,21 @@ import type { BackpackStatus } from '../../models/backpackItem';
 type BadgeTone = 'neutral' | 'pending' | 'success' | 'muted';
 
 interface StatusLabel {
-  label: string;
+  /** Translation key — pass through `t()` before display. */
+  labelKey: string;
   tone: BadgeTone;
 }
 
-/** Display label + badge tone for a task status. */
+/** Translation key + badge tone for a task status. */
 export const TASK_STATUS: Record<TaskStatus, StatusLabel> = {
-  available: { label: 'To do', tone: 'neutral' },
-  pending_approval: { label: 'Pending approval', tone: 'pending' },
-  completed: { label: 'Completed', tone: 'success' },
+  available: { labelKey: 'tasks.toDo', tone: 'neutral' },
+  pending_approval: { labelKey: 'tasks.pendingApproval', tone: 'pending' },
+  completed: { labelKey: 'tasks.completed', tone: 'success' },
 };
 
-/** Display label + badge tone for a backpack-item status. */
+/** Translation key + badge tone for a backpack-item status. */
 export const BACKPACK_STATUS: Record<BackpackStatus, StatusLabel> = {
-  owned: { label: 'Owned', tone: 'neutral' },
-  redeem_requested: { label: 'Redeem requested', tone: 'pending' },
-  redeemed: { label: 'Redeemed', tone: 'success' },
+  owned: { labelKey: 'backpack.owned', tone: 'neutral' },
+  redeem_requested: { labelKey: 'backpack.redeemRequested', tone: 'pending' },
+  redeemed: { labelKey: 'backpack.redeemed', tone: 'success' },
 };

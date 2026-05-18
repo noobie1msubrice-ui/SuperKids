@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../../core/context/AuthContext'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useCollectionData } from '../../../core/hooks/useCollectionData'
-import { useToast } from '../../../core/context/ToastContext'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { StarChip } from '../../../core/components/StarChip'
@@ -10,10 +10,11 @@ import { TransactionList } from '../../../core/components/TransactionList'
 import { DangerButton } from '../../../core/components/Button'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { LoadingView } from '../../../core/components/LoadingView'
+import { ProfileSettings } from '../../settings/ProfileSettings'
 
 export function ChildProfilePage() {
   const { profile, loading, logout } = useAuth()
-  const { showToast } = useToast()
+  const { t } = useTranslation()
   const [confirmLogout, setConfirmLogout] = useState(false)
 
   const txnQuery = useMemo(
@@ -29,7 +30,7 @@ export function ChildProfilePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="My Profile" />
+      <PageHeader title={t('profile.childTitle')} />
 
       <Card>
         <div className="flex flex-col items-center gap-3 py-4">
@@ -41,28 +42,28 @@ export function ChildProfilePage() {
         </div>
       </Card>
 
+      <ProfileSettings />
+
       <section>
-        <h2 className="mb-3 text-section font-semibold">Star History</h2>
+        <h2 className="mb-3 text-section font-semibold">{t('profile.starHistory')}</h2>
         <TransactionList transactions={transactions} />
       </section>
 
       <Card>
         <DangerButton fullWidth onClick={() => setConfirmLogout(true)}>
-          Log out
+          {t('common.logOut')}
         </DangerButton>
       </Card>
 
       <ConfirmDialog
         open={confirmLogout}
-        title="Log out?"
-        message="You will need to ask your parent for your login details."
-        confirmLabel="Log out"
+        title={t('common.logOut')}
+        message=""
+        confirmLabel={t('common.logOut')}
+        cancelLabel={t('common.cancel')}
         danger
         loading={false}
-        onConfirm={() => {
-          logout()
-          showToast('Logged out.', 'info')
-        }}
+        onConfirm={logout}
         onCancel={() => setConfirmLogout(false)}
       />
     </div>

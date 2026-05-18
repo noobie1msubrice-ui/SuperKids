@@ -7,6 +7,7 @@ import { functionsService } from '../../../core/services/functionsService';
 import { useCollectionData } from '../../../core/hooks/useCollectionData';
 import { useAction } from '../../../core/hooks/useAction';
 import { useToast } from '../../../core/context/ToastContext';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
 import { Card } from '../../../core/components/Card';
 import { StarChip } from '../../../core/components/StarChip';
@@ -24,6 +25,7 @@ export function ChildDetailPage() {
   const { childId = '' } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const { children, loading: childrenLoading } = useChildren();
   const child = children.find((c) => c.id === childId);
 
@@ -57,10 +59,10 @@ export function ChildDetailPage() {
     return (
       <EmptyState
         icon="🔍"
-        message="That child could not be found."
+        message={t('family.childNotFound')}
         action={
           <PrimaryButton onClick={() => navigate('/parent/family')}>
-            Back to Family
+            {t('family.backToFamily')}
           </PrimaryButton>
         }
       />
@@ -70,7 +72,7 @@ export function ChildDetailPage() {
   async function handleRemove(): Promise<void> {
     const result = await remove.run({ childUid: childId });
     if (result) {
-      showToast('Child removed.', 'success');
+      showToast(t('family.childRemoved'), 'success');
       navigate('/parent/family');
     }
   }
@@ -78,7 +80,7 @@ export function ChildDetailPage() {
   async function handleRedeem(itemId: string): Promise<void> {
     const result = await redeem.run(itemId);
     if (result !== undefined) {
-      showToast('Marked as redeemed.', 'success');
+      showToast(t('family.markedRedeemed'), 'success');
     }
   }
 
@@ -88,7 +90,7 @@ export function ChildDetailPage() {
 
       <Card>
         <div className="flex items-center justify-between gap-4">
-          <span className="text-section">Star balance</span>
+          <span className="text-section">{t('family.starBalance')}</span>
           <StarChip count={child.starBalance ?? 0} size="lg" />
         </div>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -96,21 +98,21 @@ export function ChildDetailPage() {
             className="min-h-[44px] px-4"
             onClick={() => setManageOpen(true)}
           >
-            Edit name / password
+            {t('family.editNamePassword')}
           </SecondaryButton>
           <DangerButton
             className="min-h-[44px] px-4"
             onClick={() => setConfirmRemove(true)}
           >
-            Remove child
+            {t('family.removeChild')}
           </DangerButton>
         </div>
       </Card>
 
       <section>
-        <h2 className="mb-3 text-section">Recent tasks</h2>
+        <h2 className="mb-3 text-section">{t('family.recentTasks')}</h2>
         {tasks.length === 0 ? (
-          <EmptyState icon="📋" message="No tasks for this child yet." />
+          <EmptyState icon="📋" message={t('family.noTasksChild')} />
         ) : (
           <ul className="flex flex-col gap-2">
             {tasks.slice(0, 8).map((task) => (
@@ -123,7 +125,10 @@ export function ChildDetailPage() {
                 </span>
                 <div className="flex shrink-0 items-center gap-2">
                   <StarChip count={task.starReward} size="sm" />
-                  <StatusBadge {...TASK_STATUS[task.status]} />
+                  <StatusBadge
+                    label={t(TASK_STATUS[task.status].labelKey)}
+                    tone={TASK_STATUS[task.status].tone}
+                  />
                 </div>
               </li>
             ))}
@@ -132,9 +137,9 @@ export function ChildDetailPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-section">Backpack</h2>
+        <h2 className="mb-3 text-section">{t('family.backpack')}</h2>
         {backpack.length === 0 ? (
-          <EmptyState icon="🎒" message="Nothing bought yet." />
+          <EmptyState icon="🎒" message={t('family.nothingBought')} />
         ) : (
           <ul className="flex flex-col gap-2">
             {backpack.map((item) => (
@@ -146,14 +151,17 @@ export function ChildDetailPage() {
                   {item.name}
                 </span>
                 <div className="flex shrink-0 items-center gap-2">
-                  <StatusBadge {...BACKPACK_STATUS[item.status]} />
+                  <StatusBadge
+                    label={t(BACKPACK_STATUS[item.status].labelKey)}
+                    tone={BACKPACK_STATUS[item.status].tone}
+                  />
                   {item.status === 'redeem_requested' && (
                     <PrimaryButton
                       className="min-h-[40px] px-3 text-caption"
                       loading={redeem.pending}
                       onClick={() => handleRedeem(item.id)}
                     >
-                      Mark Redeemed
+                      {t('family.markRedeemed')}
                     </PrimaryButton>
                   )}
                 </div>
@@ -164,7 +172,7 @@ export function ChildDetailPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-section">Star history</h2>
+        <h2 className="mb-3 text-section">{t('family.starHistory')}</h2>
         <TransactionList transactions={transactions} />
       </section>
 
@@ -174,15 +182,16 @@ export function ChildDetailPage() {
         onClose={() => setManageOpen(false)}
         onSaved={() => {
           setManageOpen(false);
-          showToast('Saved.', 'success');
+          showToast(t('family.saved'), 'success');
         }}
       />
 
       <ConfirmDialog
         open={confirmRemove}
-        title={`Remove ${child.displayName}?`}
-        message="This deletes the child's account, tasks, and backpack. This cannot be undone."
-        confirmLabel="Remove"
+        title={t('family.removeConfirmTitle', { name: child.displayName })}
+        message={t('family.removeConfirmMsg')}
+        confirmLabel={t('family.removeChild')}
+        cancelLabel={t('common.cancel')}
         danger
         loading={remove.pending}
         onConfirm={handleRemove}

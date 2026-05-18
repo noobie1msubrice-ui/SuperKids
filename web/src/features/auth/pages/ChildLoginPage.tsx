@@ -4,6 +4,7 @@ import { useRoleLogin } from '../hooks/useRoleLogin';
 import { TextField } from '../../../core/components/TextField';
 import { PrimaryButton } from '../../../core/components/Button';
 import { FormError } from '../../../core/components/FormError';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 
 interface LoginForm {
   email: string;
@@ -18,11 +19,12 @@ export function ChildLoginPage() {
     formState: { errors },
   } = useForm<LoginForm>();
   const { submit, pending, error } = useRoleLogin('child');
+  const { t } = useTranslation();
 
   return (
     <AuthScreen
-      title="Kid Log In"
-      subtitle="Ask your parent for your login."
+      title={t('auth.kidLogIn')}
+      subtitle={t('auth.kidLoginSubtitle')}
     >
       <form
         onSubmit={handleSubmit((d) => submit(d.email, d.password))}
@@ -31,21 +33,21 @@ export function ChildLoginPage() {
       >
         <FormError message={error} />
         <TextField
-          label="Email"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           error={errors.email?.message}
-          {...register('email', { required: 'Please enter your email.' })}
+          {...register('email', { required: t('auth.enterEmail') })}
         />
         <TextField
-          label="Password"
+          label={t('auth.password')}
           type="password"
           autoComplete="current-password"
           error={errors.password?.message}
-          {...register('password', { required: 'Please enter your password.' })}
+          {...register('password', { required: t('auth.enterPassword') })}
         />
         <PrimaryButton type="submit" fullWidth loading={pending}>
-          Let's Go!
+          {t('auth.letsGo')}
         </PrimaryButton>
       </form>
     </AuthScreen>

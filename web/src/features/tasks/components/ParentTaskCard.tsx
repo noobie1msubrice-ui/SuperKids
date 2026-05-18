@@ -3,6 +3,7 @@ import { StarChip } from '../../../core/components/StarChip';
 import { StatusBadge } from '../../../core/components/StatusBadge';
 import { PrimaryButton, SecondaryButton } from '../../../core/components/Button';
 import { TASK_STATUS } from '../../../core/utils/statusLabels';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import type { Task } from '../../../models/task';
 
 interface ParentTaskCardProps {
@@ -24,6 +25,7 @@ export function ParentTaskCard({
   onReject,
   busy,
 }: ParentTaskCardProps) {
+  const { t } = useTranslation();
   const isPending = task.status === 'pending_approval';
 
   return (
@@ -35,7 +37,10 @@ export function ParentTaskCard({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <StarChip count={task.starReward} size="sm" />
-          <StatusBadge {...TASK_STATUS[task.status]} />
+          <StatusBadge
+            label={t(TASK_STATUS[task.status].labelKey)}
+            tone={TASK_STATUS[task.status].tone}
+          />
         </div>
       </div>
 
@@ -50,14 +55,14 @@ export function ParentTaskCard({
             onClick={onReject}
             loading={busy}
           >
-            Reject
+            {t('tasks.reject')}
           </SecondaryButton>
           <PrimaryButton
             className="min-h-[44px] flex-1 px-3"
             onClick={onApprove}
             loading={busy}
           >
-            Approve
+            {t('tasks.approve')}
           </PrimaryButton>
         </div>
       )}

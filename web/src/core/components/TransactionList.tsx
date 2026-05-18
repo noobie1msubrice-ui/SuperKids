@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import type { Transaction } from '../../models/transaction';
 import { formatDate } from '../utils/formatters';
+import { useTranslation } from '../i18n/LanguageContext';
 import { EmptyState } from './EmptyState';
 
 interface TransactionListProps {
@@ -9,10 +10,9 @@ interface TransactionListProps {
 
 /** A Star ledger: each earn (green +) or spend (orange −) with reason and date. */
 export function TransactionList({ transactions }: TransactionListProps) {
+  const { t } = useTranslation();
   if (transactions.length === 0) {
-    return (
-      <EmptyState icon="✨" message="No Star activity yet." />
-    );
+    return <EmptyState icon="✨" message={t('profile.noActivity')} />;
   }
 
   return (

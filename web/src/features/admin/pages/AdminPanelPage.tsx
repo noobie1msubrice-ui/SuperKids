@@ -9,6 +9,7 @@ import { ErrorView } from '../../../core/components/ErrorView'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { StatusBadge } from '../../../core/components/StatusBadge'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
+import { useTranslation } from '../../../core/i18n/LanguageContext'
 
 interface PendingAction {
   title: string
@@ -41,6 +42,7 @@ function DeleteButton({ onClick }: { onClick: () => void }) {
 export function AdminPanelPage() {
   const { profile, logout } = useAuth()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const { data: users, loading: usersLoading, error } = useAllUsers()
   const { data: tasks, loading: tasksLoading } = useAllTasks()
   const { data: storeItems, loading: storeLoading } = useAllStoreItems()
@@ -275,7 +277,10 @@ export function AdminPanelPage() {
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <StatusBadge {...TASK_STATUS[task.status]} />
+                        <StatusBadge
+                          label={t(TASK_STATUS[task.status].labelKey)}
+                          tone={TASK_STATUS[task.status].tone}
+                        />
                         <DeleteButton onClick={() => askDeleteTask(task.id, task.title)} />
                       </div>
                     </div>

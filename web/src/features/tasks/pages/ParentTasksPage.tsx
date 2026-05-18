@@ -5,6 +5,7 @@ import { useChildren } from '../../family/hooks/useChildren';
 import { ParentTaskCard } from '../components/ParentTaskCard';
 import { functionsService } from '../../../core/services/functionsService';
 import { useToast } from '../../../core/context/ToastContext';
+import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
 import { PrimaryButton } from '../../../core/components/Button';
 import { LoadingView } from '../../../core/components/LoadingView';
@@ -15,6 +16,7 @@ import { EmptyState } from '../../../core/components/EmptyState';
 export function ParentTasksPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const { data: tasks, loading: tasksLoading, error } = useParentTasks();
   const { children, loading: childrenLoading } = useChildren();
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null);
@@ -27,10 +29,10 @@ export function ParentTasksPage() {
     try {
       if (action === 'approve') {
         const result = await functionsService.approveTask({ taskId });
-        showToast(`Approved! +${result.newBalance} ⭐ total.`, 'success');
+        showToast(t('tasks.approved', { count: result.newBalance }), 'success');
       } else {
         await functionsService.rejectTask({ taskId });
-        showToast('Sent back to try again.', 'info');
+        showToast(t('tasks.sentBack'), 'info');
       }
     } catch (err) {
       showToast((err as Error).message, 'error');
@@ -44,14 +46,14 @@ export function ParentTasksPage() {
   return (
     <div>
       <PageHeader
-        title="Tasks"
+        title={t('tasks.parentTitle')}
         action={
           children.length > 0 ? (
             <PrimaryButton
               className="min-h-[44px] px-4"
               onClick={() => navigate('/parent/tasks/add')}
             >
-              Add Task
+              {t('tasks.addTask')}
             </PrimaryButton>
           ) : undefined
         }
@@ -63,20 +65,17 @@ export function ParentTasksPage() {
       {!loading && !error && children.length === 0 && (
         <EmptyState
           icon="👶"
-          message="Add a child first, then you can assign tasks."
+          message={t('tasks.addChildFirst')}
           action={
             <PrimaryButton onClick={() => navigate('/parent/family/add')}>
-              Add Child
+              {t('tasks.addChild')}
             </PrimaryButton>
           }
         />
       )}
 
       {!loading && !error && children.length > 0 && tasks.length === 0 && (
-        <EmptyState
-          icon="📋"
-          message="No tasks yet — click Add Task to assign one."
-        />
+        <EmptyState icon="📋" message={t('tasks.noTasksParent')} />
       )}
 
       {!loading && !error && (

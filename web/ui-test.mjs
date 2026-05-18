@@ -101,6 +101,15 @@ try {
     await page.getByRole('heading', { name: 'Profile' }).waitFor({ timeout: 8000 })
   })
 
+  // 9a. Settings language switch flips the whole UI to Vietnamese
+  await step('Settings language switch changes the UI language', async () => {
+    await page.getByRole('button', { name: 'Tiếng Việt' }).click()
+    await page.getByRole('link', { name: 'Nhiệm vụ' }).waitFor({ timeout: 6000 })
+    // switch back so the remaining steps match English labels
+    await page.getByRole('button', { name: 'English' }).click()
+    await page.getByRole('link', { name: 'Tasks' }).waitFor({ timeout: 6000 })
+  })
+
   // 9b. The Winkz logo links back to the home menu
   await step('clicking the Winkz logo returns to the home menu', async () => {
     await page.getByRole('link', { name: 'Go to home' }).click()

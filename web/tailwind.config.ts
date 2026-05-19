@@ -27,11 +27,13 @@ export default {
         caption: ['13px', { lineHeight: '1.4', fontWeight: '400' }],
       },
       borderRadius: {
-        xl: '12px',
-        '2xl': '16px',
+        xl: '14px',
+        '2xl': '20px',
       },
       boxShadow: {
         card: '0 2px 12px rgba(31, 32, 48, 0.08)',
+        cardHover: '0 8px 24px rgba(91, 91, 214, 0.16)',
+        pop: '0 4px 0 rgba(31, 32, 48, 0.14)',
       },
       maxWidth: {
         content: '960px',

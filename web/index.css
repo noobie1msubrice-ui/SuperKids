@@ -53,4 +53,66 @@
   .animate-confetti {
     animation: confetti-fall 1600ms linear forwards;
   }
+
+  /* Catchy UI motion: cards/screens ease in, controls react to taps. */
+  @keyframes pop-in {
+    0% {
+      transform: scale(0.94);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.015);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-in-up {
+    0% {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-7deg);
+    }
+    75% {
+      transform: rotate(7deg);
+    }
+  }
+
+  .animate-pop-in {
+    animation: pop-in 260ms ease-out both;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 320ms ease-out both;
+  }
+
+  .animate-wiggle {
+    animation: wiggle 500ms ease-in-out;
+  }
+
+  /* Respect users who prefer reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pop-in,
+    .animate-fade-in-up,
+    .animate-wiggle,
+    .animate-star-pop,
+    .animate-confetti {
+      animation: none;
+    }
+  }
 }

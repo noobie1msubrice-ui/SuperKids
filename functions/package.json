@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "lint": "eslint --ext .ts src",
+    "lint": "eslint src",
     "serve": "npm run build && firebase emulators:start --only functions",
     "test": "firebase emulators:exec --only auth,firestore \"vitest run\"",
     "deploy": "firebase deploy --only functions"

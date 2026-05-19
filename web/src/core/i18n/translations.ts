@@ -31,6 +31,7 @@ const en: Dict = {
   'auth.parentLogIn': 'Parent Log In',
   'auth.kidLogIn': 'Kid Log In',
   'auth.logIn': 'Log In',
+  'auth.back': 'Back',
   'auth.email': 'Email',
   'auth.password': 'Password',
   'auth.confirmPassword': 'Confirm password',
@@ -49,6 +50,15 @@ const en: Dict = {
   'auth.kidLoginSubtitle': 'Ask your parent for your login.',
   'auth.letsGo': "Let's Go!",
   'auth.enterEmail': 'Please enter your email.',
+  'auth.kidSignUp': 'Kid Sign Up',
+  'auth.kidSignupSubtitle': 'Make your account, then ask a parent to add you.',
+
+  'waiting.title': "You're almost in!",
+  'waiting.message':
+    'Ask a parent to add you to their family. They will need this email:',
+  'waiting.note':
+    'As soon as they do, your tasks and Star Store appear right here.',
+  'waiting.signOut': 'Sign out',
 
   'nav.tasks': 'Tasks',
   'nav.store': 'Store',
@@ -158,6 +168,13 @@ const en: Dict = {
   'family.newPassword': 'New password (leave blank to keep)',
   'family.manageChild': 'Manage {name}',
   'family.saved': 'Saved.',
+  'family.linkChild': 'Link a Kid',
+  'family.linkAKid': 'Link a Kid',
+  'family.linkIntro':
+    'Already made their own account? Enter the email your kid signed up with and they will join your family.',
+  'family.kidSignupEmail': "Kid's sign-up email",
+  'family.kidLinked': 'Kid linked!',
+  'family.kidLinkedMsg': '{name} is now part of your family.',
 
   'profile.parentTitle': 'Profile',
   'profile.childTitle': 'My Profile',
@@ -207,6 +224,7 @@ const vi: Dict = {
   'auth.parentLogIn': 'Đăng nhập Phụ huynh',
   'auth.kidLogIn': 'Đăng nhập Trẻ em',
   'auth.logIn': 'Đăng nhập',
+  'auth.back': 'Quay lại',
   'auth.email': 'Email',
   'auth.password': 'Mật khẩu',
   'auth.confirmPassword': 'Xác nhận mật khẩu',
@@ -225,6 +243,15 @@ const vi: Dict = {
   'auth.kidLoginSubtitle': 'Hỏi bố mẹ để biết thông tin đăng nhập nhé.',
   'auth.letsGo': 'Bắt đầu thôi!',
   'auth.enterEmail': 'Vui lòng nhập email của bạn.',
+  'auth.kidSignUp': 'Đăng ký Trẻ em',
+  'auth.kidSignupSubtitle': 'Tạo tài khoản của bé, rồi nhờ bố mẹ thêm bé vào.',
+
+  'waiting.title': 'Sắp xong rồi!',
+  'waiting.message':
+    'Nhờ bố mẹ thêm bé vào gia đình. Bố mẹ sẽ cần email này:',
+  'waiting.note':
+    'Ngay khi bố mẹ thêm, nhiệm vụ và Cửa hàng Sao sẽ hiện ra ở đây.',
+  'waiting.signOut': 'Đăng xuất',
 
   'nav.tasks': 'Nhiệm vụ',
   'nav.store': 'Cửa hàng',
@@ -334,6 +361,13 @@ const vi: Dict = {
   'family.newPassword': 'Mật khẩu mới (để trống nếu giữ nguyên)',
   'family.manageChild': 'Quản lý {name}',
   'family.saved': 'Đã lưu.',
+  'family.linkChild': 'Liên kết bé',
+  'family.linkAKid': 'Liên kết một bé',
+  'family.linkIntro':
+    'Bé đã tự tạo tài khoản? Nhập email bé đã dùng để đăng ký, bé sẽ vào gia đình của bạn.',
+  'family.kidSignupEmail': 'Email đăng ký của bé',
+  'family.kidLinked': 'Đã liên kết bé!',
+  'family.kidLinkedMsg': '{name} giờ đã thuộc gia đình của bạn.',
 
   'profile.parentTitle': 'Hồ sơ',
   'profile.childTitle': 'Hồ sơ của tôi',

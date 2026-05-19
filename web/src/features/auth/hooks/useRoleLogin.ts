@@ -39,7 +39,7 @@ export function useRoleLogin(expectedRole: UserRole): RoleLogin {
         setError(wrongRoleMessage);
         return;
       }
-      navigate(homePathFor(profile.role), { replace: true });
+      navigate(homePathFor(profile), { replace: true });
     } catch (err) {
       setError((err as Error).message || COPY.genericError);
     } finally {

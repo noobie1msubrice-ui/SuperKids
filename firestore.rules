@@ -40,11 +40,18 @@ service cloud.firestore {
       // A child reads their own parent's profile.
       allow read: if isChild()
                   && uid == userDoc(myUid()).get('parentId', '');
-      // Profiles are created by sign-up (parent / allow-listed admin) or the
-      // createChildAccount function.
+      // Profiles are created by sign-up (parent / allow-listed admin / a kid
+      // self-registering) or the createChildAccount function. A self-registered
+      // kid starts unlinked: no `parentId` and no `starBalance` may be set here
+      // — both are written only by Cloud Functions (createChildAccount or
+      // linkChildToParent), so a kid cannot attach to a family or grant
+      // themselves Stars.
       allow create: if isSignedIn() && uid == myUid() && (
         request.resource.data.role == 'parent' ||
-        (request.resource.data.role == 'admin' && isAdminEmail())
+        (request.resource.data.role == 'admin' && isAdminEmail()) ||
+        (request.resource.data.role == 'child'
+          && !('parentId' in request.resource.data)
+          && !('starBalance' in request.resource.data))
       );
       // Self-service updates: only displayName / fcmToken may change.
       allow update: if isSignedIn() && uid == myUid()

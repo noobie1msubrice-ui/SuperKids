@@ -48,6 +48,11 @@ export const functionsService = {
     { childUid: string }
   >('createChildAccount'),
 
+  linkChildToParent: callable<
+    { email: string },
+    { childUid: string; displayName: string }
+  >('linkChildToParent'),
+
   updateChildCredentials: callable<
     { childUid: string; displayName?: string; newPassword?: string },
     { success: true }

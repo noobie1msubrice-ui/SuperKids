@@ -16,7 +16,7 @@ export function Header({ profile }: { profile: UserProfile }) {
     <header className="bg-surface shadow-card">
       <div className="mx-auto flex max-w-content items-center justify-between px-4 py-3">
         <Link
-          to={homePathFor(profile.role)}
+          to={homePathFor(profile)}
           aria-label={t('nav.home')}
           className="flex items-center gap-2 rounded-lg transition-opacity hover:opacity-80"
         >

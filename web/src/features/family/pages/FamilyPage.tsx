@@ -3,7 +3,7 @@ import { useChildren } from '../hooks/useChildren';
 import { ChildCard } from '../components/ChildCard';
 import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
-import { PrimaryButton } from '../../../core/components/Button';
+import { PrimaryButton, SecondaryButton } from '../../../core/components/Button';
 import { LoadingView } from '../../../core/components/LoadingView';
 import { ErrorView } from '../../../core/components/ErrorView';
 import { EmptyState } from '../../../core/components/EmptyState';
@@ -27,6 +27,14 @@ export function FamilyPage() {
           </PrimaryButton>
         }
       />
+
+      <SecondaryButton
+        fullWidth
+        className="mb-4 min-h-[44px]"
+        onClick={() => navigate('/parent/family/link')}
+      >
+        {t('family.linkChild')}
+      </SecondaryButton>
 
       {loading && <LoadingView />}
       {error && <ErrorView />}

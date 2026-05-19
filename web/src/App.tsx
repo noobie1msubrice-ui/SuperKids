@@ -9,6 +9,8 @@ import { RoleSelectPage } from './features/auth/pages/RoleSelectPage'
 import { ParentLoginPage } from './features/auth/pages/ParentLoginPage'
 import { ParentSignupPage } from './features/auth/pages/ParentSignupPage'
 import { ChildLoginPage } from './features/auth/pages/ChildLoginPage'
+import { ChildSignupPage } from './features/auth/pages/ChildSignupPage'
+import { ChildWaitingPage } from './features/auth/pages/ChildWaitingPage'
 import { ParentTasksPage } from './features/tasks/pages/ParentTasksPage'
 import { AddTaskPage } from './features/tasks/pages/AddTaskPage'
 import { EditTaskPage } from './features/tasks/pages/EditTaskPage'
@@ -18,6 +20,7 @@ import { AddEditStoreItemPage } from './features/store/pages/AddEditStoreItemPag
 import { ChildStorePage } from './features/store/pages/ChildStorePage'
 import { FamilyPage } from './features/family/pages/FamilyPage'
 import { AddChildPage } from './features/family/pages/AddChildPage'
+import { LinkChildPage } from './features/family/pages/LinkChildPage'
 import { ChildDetailPage } from './features/family/pages/ChildDetailPage'
 import { BackpackPage } from './features/backpack/pages/BackpackPage'
 import { ParentProfilePage } from './features/profile/pages/ParentProfilePage'
@@ -36,6 +39,8 @@ export function App() {
             <Route path="/parent/login" element={<ParentLoginPage />} />
             <Route path="/parent/signup" element={<ParentSignupPage />} />
             <Route path="/child/login" element={<ChildLoginPage />} />
+            <Route path="/child/signup" element={<ChildSignupPage />} />
+            <Route path="/child/waiting" element={<ChildWaitingPage />} />
 
             <Route element={<ProtectedRoute role="parent" />}>
               <Route path="/parent/tasks" element={<ParentTasksPage />} />
@@ -46,6 +51,7 @@ export function App() {
               <Route path="/parent/store/:itemId/edit" element={<AddEditStoreItemPage />} />
               <Route path="/parent/family" element={<FamilyPage />} />
               <Route path="/parent/family/add" element={<AddChildPage />} />
+              <Route path="/parent/family/link" element={<LinkChildPage />} />
               <Route path="/parent/family/:childId" element={<ChildDetailPage />} />
               <Route path="/parent/profile" element={<ParentProfilePage />} />
             </Route>

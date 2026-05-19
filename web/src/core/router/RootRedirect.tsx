@@ -16,5 +16,5 @@ export function RootRedirect() {
   if (!firebaseUser || !profile) {
     return <Navigate to="/role-select" replace />;
   }
-  return <Navigate to={homePathFor(profile.role)} replace />;
+  return <Navigate to={homePathFor(profile)} replace />;
 }

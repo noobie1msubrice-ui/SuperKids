@@ -2,12 +2,16 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AppLayout } from '../layout/AppLayout';
 import { LoadingView } from '../components/LoadingView';
-import type { UserRole } from '../../models/userProfile';
+import type { UserProfile, UserRole } from '../../models/userProfile';
 
-/** Path of the home page for each role. */
-export function homePathFor(role: UserRole): string {
-  if (role === 'admin') return '/admin';
-  return role === 'parent' ? '/parent/tasks' : '/child/tasks';
+/**
+ * Path of the home page for a profile. A kid who has not yet been linked to a
+ * parent has no tasks or store, so they land on the waiting screen instead.
+ */
+export function homePathFor(profile: UserProfile): string {
+  if (profile.role === 'admin') return '/admin';
+  if (profile.role === 'parent') return '/parent/tasks';
+  return profile.parentId ? '/child/tasks' : '/child/waiting';
 }
 
 /**
@@ -25,7 +29,12 @@ export function ProtectedRoute({ role }: { role: UserRole }) {
     return <Navigate to="/role-select" replace />;
   }
   if (profile.role !== role) {
-    return <Navigate to={homePathFor(profile.role)} replace />;
+    return <Navigate to={homePathFor(profile)} replace />;
+  }
+  // An unlinked kid cannot use the child section yet — hold them on the
+  // waiting screen until a parent claims their account.
+  if (role === 'child' && !profile.parentId) {
+    return <Navigate to="/child/waiting" replace />;
   }
   // The admin panel brings its own chrome — no parent/child header & nav.
   if (role === 'admin') {

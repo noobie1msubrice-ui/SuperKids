@@ -8,6 +8,7 @@ setGlobalOptions({ region: 'us-central1' });
 export const ping = onCall(() => ({ ok: true, at: Date.now() }));
 
 export { createChildAccount } from './createChildAccount';
+export { linkChildToParent } from './linkChildToParent';
 export { updateChildCredentials } from './updateChildCredentials';
 export { deleteChildAccount } from './deleteChildAccount';
 export { approveTask } from './approveTask';

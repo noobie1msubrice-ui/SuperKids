@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthScreen } from '../components/AuthScreen';
 import { useRoleLogin } from '../hooks/useRoleLogin';
 import { TextField } from '../../../core/components/TextField';
@@ -22,10 +22,13 @@ export function ParentLoginPage() {
   } = useForm<LoginForm>();
   const { submit, pending, error } = useRoleLogin('parent');
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <AuthScreen
       title={t('auth.parentLogIn')}
+      onBack={() => navigate('/role-select')}
+      backLabel={t('auth.back')}
       footer={
         <span className="text-textMuted">
           {t('auth.newHere')}{' '}

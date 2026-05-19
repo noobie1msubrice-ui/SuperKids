@@ -74,6 +74,35 @@ export const authService = {
   },
 
   /**
+   * Creates a child Auth user and an *unlinked* `role: 'child'` profile — no
+   * `parentId`, no `starBalance`. A kid uses this to self-register; a parent
+   * later claims them via the linkChildToParent function. Firestore rules
+   * reject any `parentId`/`starBalance` written here.
+   */
+  async signUpChild(
+    displayName: string,
+    email: string,
+    password: string,
+  ): Promise<void> {
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      await updateProfile(user, { displayName });
+      await setDoc(doc(db, COLLECTIONS.users, user.uid), {
+        role: 'child',
+        displayName,
+        email,
+        createdAt: serverTimestamp(),
+      });
+    } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /**
    * Creates an admin Auth user and its `role: 'admin'` profile. Allowed only
    * for the email allow-list; Firestore rules enforce the same restriction.
    */

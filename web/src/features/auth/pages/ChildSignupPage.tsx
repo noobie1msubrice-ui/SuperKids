@@ -17,8 +17,11 @@ interface SignupForm {
   confirmPassword: string;
 }
 
-/** Parent sign-up screen (doc 01 F2, doc 06 §4.3). */
-export function ParentSignupPage() {
+/**
+ * Kid sign-up screen. Creates an unlinked child account; the kid then waits on
+ * the waiting screen until a parent claims them with linkChildToParent.
+ */
+export function ChildSignupPage() {
   const {
     register,
     handleSubmit,
@@ -34,9 +37,14 @@ export function ParentSignupPage() {
     setPending(true);
     setError(null);
     try {
-      await authService.signUpParent(data.displayName, data.email, data.password);
-      // AuthContext picks up the new user; route to the parent home.
-      navigate('/parent/tasks', { replace: true });
+      await authService.signUpChild(
+        data.displayName.trim(),
+        data.email.trim(),
+        data.password,
+      );
+      // AuthContext picks up the new (unlinked) kid; send them to the waiting
+      // screen until a parent links the account.
+      navigate('/child/waiting', { replace: true });
     } catch (err) {
       setError((err as Error).message || COPY.genericError);
       setPending(false);
@@ -45,13 +53,14 @@ export function ParentSignupPage() {
 
   return (
     <AuthScreen
-      title={t('auth.createYourAccount')}
-      onBack={() => navigate('/parent/login')}
+      title={t('auth.kidSignUp')}
+      subtitle={t('auth.kidSignupSubtitle')}
+      onBack={() => navigate('/child/login')}
       backLabel={t('auth.back')}
       footer={
         <span className="text-textMuted">
           {t('auth.alreadyHaveOne')}{' '}
-          <Link to="/parent/login" className="font-bold text-primary underline">
+          <Link to="/child/login" className="font-bold text-primary underline">
             {t('auth.logInLink')}
           </Link>
         </span>

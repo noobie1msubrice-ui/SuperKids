@@ -43,6 +43,23 @@ export const storageService = {
     return { imageUrl, imagePath: path };
   },
 
+  /**
+   * Uploads a profile picture to `avatars/{uid}/avatar` and returns its
+   * download URL. The fixed path means each upload overwrites the previous
+   * one — no orphan files — and the fresh download token busts any cache.
+   */
+  async uploadAvatar(uid: string, file: File): Promise<string> {
+    if (!file.type.startsWith('image/')) {
+      throw new AppError('invalid-file', 'Please choose an image file.');
+    }
+    if (file.size >= LIMITS.imageMaxBytes) {
+      throw new AppError('file-too-large', 'That image is too big (max 5 MB).');
+    }
+    const fileRef = ref(storage, `avatars/${uid}/avatar`);
+    await uploadBytes(fileRef, file, { contentType: file.type });
+    return getDownloadURL(fileRef);
+  },
+
   /** Deletes a store-item image. A missing file is treated as success. */
   async deleteStoreImage(imagePath: string): Promise<void> {
     try {

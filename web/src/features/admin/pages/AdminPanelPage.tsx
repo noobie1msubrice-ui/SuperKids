@@ -4,12 +4,16 @@ import { useToast } from '../../../core/context/ToastContext'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useAllUsers, useAllTasks, useAllStoreItems } from '../hooks/useAdminData'
 import { StarBalanceEditor } from '../components/StarBalanceEditor'
+import { EditUserModal } from '../components/EditUserModal'
+import { StarHistoryModal } from '../components/StarHistoryModal'
 import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { StatusBadge } from '../../../core/components/StatusBadge'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
+import type { UserProfile } from '../../../models/userProfile'
+import type { TaskStatus } from '../../../models/task'
 
 interface PendingAction {
   title: string
@@ -26,6 +30,26 @@ function Stat({ label, value }: { label: string; value: number }) {
   )
 }
 
+function SearchInput({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+}) {
+  return (
+    <input
+      type="search"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-xl border-2 border-textMuted/30 px-4 py-2 text-body focus:border-primary focus:outline-none"
+    />
+  )
+}
+
 function DeleteButton({ onClick }: { onClick: () => void }) {
   return (
     <button
@@ -35,6 +59,43 @@ function DeleteButton({ onClick }: { onClick: () => void }) {
     >
       Delete
     </button>
+  )
+}
+
+function ActionButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="shrink-0 rounded-lg bg-primary/10 px-3 py-1 text-caption font-bold text-primary hover:bg-primary/20"
+    >
+      {label}
+    </button>
+  )
+}
+
+/** The Edit / Star history / Delete button cluster shared by every user row. */
+function UserActions({
+  user,
+  isSelf,
+  onEdit,
+  onHistory,
+  onDelete,
+}: {
+  user: UserProfile
+  isSelf: boolean
+  onEdit: () => void
+  onHistory: () => void
+  onDelete: () => void
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <ActionButton onClick={onEdit} label="Edit" />
+      {user.role === 'child' && (
+        <ActionButton onClick={onHistory} label="⭐ History" />
+      )}
+      {!isSelf && <DeleteButton onClick={onDelete} />}
+    </div>
   )
 }
 
@@ -49,6 +110,13 @@ export function AdminPanelPage() {
 
   const [pending, setPending] = useState<PendingAction | null>(null)
   const [busy, setBusy] = useState(false)
+  const [editUser, setEditUser] = useState<UserProfile | null>(null)
+  const [historyChild, setHistoryChild] = useState<UserProfile | null>(null)
+
+  const [userSearch, setUserSearch] = useState('')
+  const [taskSearch, setTaskSearch] = useState('')
+  const [taskStatus, setTaskStatus] = useState<TaskStatus | 'all'>('all')
+  const [storeSearch, setStoreSearch] = useState('')
 
   const nameOf = useMemo(() => {
     const map: Record<string, string> = {}
@@ -64,6 +132,30 @@ export function AdminPanelPage() {
   const parentIds = new Set(parents.map((p) => p.id))
   const orphanChildren = children.filter(
     (c) => !c.parentId || !parentIds.has(c.parentId),
+  )
+
+  // --- Search / filter ---
+  const userTerm = userSearch.trim().toLowerCase()
+  const matchUser = (u: UserProfile): boolean =>
+    userTerm === '' ||
+    `${u.displayName} ${u.email}`.toLowerCase().includes(userTerm)
+
+  const visibleParents = parents.filter(
+    (p) => matchUser(p) || children.some((c) => c.parentId === p.id && matchUser(c)),
+  )
+  const visibleOrphans = orphanChildren.filter(matchUser)
+  const visibleAdmins = admins.filter(matchUser)
+
+  const taskTerm = taskSearch.trim().toLowerCase()
+  const visibleTasks = tasks.filter(
+    (task) =>
+      (taskStatus === 'all' || task.status === taskStatus) &&
+      (taskTerm === '' || task.title.toLowerCase().includes(taskTerm)),
+  )
+
+  const storeTerm = storeSearch.trim().toLowerCase()
+  const visibleStoreItems = storeItems.filter(
+    (item) => storeTerm === '' || item.name.toLowerCase().includes(storeTerm),
   )
 
   async function runPending(): Promise<void> {
@@ -148,16 +240,30 @@ export function AdminPanelPage() {
               <Stat label="Store items" value={storeItems.length} />
             </section>
 
-            {/* Families */}
+            {/* Users */}
             <section>
-              <h2 className="mb-3 text-title font-extrabold text-gray-800">Families</h2>
+              <h2 className="mb-3 text-title font-extrabold text-gray-800">Users</h2>
+              <div className="mb-4">
+                <SearchInput
+                  value={userSearch}
+                  onChange={setUserSearch}
+                  placeholder="Search users by name or email…"
+                />
+              </div>
+
               {parents.length === 0 ? (
                 <p className="rounded-2xl bg-surface p-6 text-center text-textMuted shadow-card">
                   No parent accounts yet.
                 </p>
+              ) : visibleParents.length === 0 &&
+                visibleOrphans.length === 0 &&
+                visibleAdmins.length === 0 ? (
+                <p className="rounded-2xl bg-surface p-6 text-center text-textMuted shadow-card">
+                  No users match your search.
+                </p>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {parents.map((parent) => {
+                  {visibleParents.map((parent) => {
                     const kids = children.filter((c) => c.parentId === parent.id)
                     return (
                       <div key={parent.id} className="rounded-2xl bg-surface p-4 shadow-card">
@@ -170,8 +276,12 @@ export function AdminPanelPage() {
                               {parent.email}
                             </div>
                           </div>
-                          <DeleteButton
-                            onClick={() => askDeleteUser(parent.id, parent.displayName)}
+                          <UserActions
+                            user={parent}
+                            isSelf={parent.id === profile?.id}
+                            onEdit={() => setEditUser(parent)}
+                            onHistory={() => {}}
+                            onDelete={() => askDeleteUser(parent.id, parent.displayName)}
                           />
                         </div>
 
@@ -190,13 +300,17 @@ export function AdminPanelPage() {
                                     {kid.email}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
                                   <StarBalanceEditor
                                     uid={kid.id}
                                     current={kid.starBalance ?? 0}
                                   />
-                                  <DeleteButton
-                                    onClick={() => askDeleteUser(kid.id, kid.displayName)}
+                                  <UserActions
+                                    user={kid}
+                                    isSelf={false}
+                                    onEdit={() => setEditUser(kid)}
+                                    onHistory={() => setHistoryChild(kid)}
+                                    onDelete={() => askDeleteUser(kid.id, kid.displayName)}
                                   />
                                 </div>
                               </li>
@@ -206,64 +320,91 @@ export function AdminPanelPage() {
                       </div>
                     )
                   })}
+
+                  {(visibleAdmins.length > 0 || visibleOrphans.length > 0) && (
+                    <div className="flex flex-col gap-2">
+                      {visibleAdmins.map((a) => (
+                        <div
+                          key={a.id}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
+                        >
+                          <div className="min-w-0">
+                            <span className="font-bold text-gray-800">
+                              🛠️ {a.displayName}
+                            </span>
+                            <span className="ml-2 text-caption text-textMuted">
+                              {a.email}
+                            </span>
+                          </div>
+                          <UserActions
+                            user={a}
+                            isSelf={a.id === profile?.id}
+                            onEdit={() => setEditUser(a)}
+                            onHistory={() => {}}
+                            onDelete={() => askDeleteUser(a.id, a.displayName)}
+                          />
+                        </div>
+                      ))}
+                      {visibleOrphans.map((c) => (
+                        <div
+                          key={c.id}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
+                        >
+                          <div className="min-w-0">
+                            <span className="font-bold text-gray-800">
+                              🧒 {c.displayName}
+                            </span>
+                            <span className="ml-2 text-caption text-textMuted">
+                              {c.email} · no parent
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <StarBalanceEditor uid={c.id} current={c.starBalance ?? 0} />
+                            <UserActions
+                              user={c}
+                              isSelf={false}
+                              onEdit={() => setEditUser(c)}
+                              onHistory={() => setHistoryChild(c)}
+                              onDelete={() => askDeleteUser(c.id, c.displayName)}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
 
-            {/* Orphan children + admins */}
-            {(orphanChildren.length > 0 || admins.length > 0) && (
-              <section>
-                <h2 className="mb-3 text-title font-extrabold text-gray-800">
-                  Other accounts
-                </h2>
-                <div className="flex flex-col gap-2">
-                  {admins.map((a) => (
-                    <div
-                      key={a.id}
-                      className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
-                    >
-                      <div className="min-w-0">
-                        <span className="font-bold text-gray-800">🛠️ {a.displayName}</span>
-                        <span className="ml-2 text-caption text-textMuted">{a.email}</span>
-                      </div>
-                      {a.id !== profile?.id && (
-                        <DeleteButton onClick={() => askDeleteUser(a.id, a.displayName)} />
-                      )}
-                    </div>
-                  ))}
-                  {orphanChildren.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
-                    >
-                      <div className="min-w-0">
-                        <span className="font-bold text-gray-800">🧒 {c.displayName}</span>
-                        <span className="ml-2 text-caption text-textMuted">
-                          {c.email} · no parent
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <StarBalanceEditor uid={c.id} current={c.starBalance ?? 0} />
-                        <DeleteButton onClick={() => askDeleteUser(c.id, c.displayName)} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
             {/* Tasks */}
             <section>
               <h2 className="mb-3 text-title font-extrabold text-gray-800">
-                All Tasks ({tasks.length})
+                Tasks ({visibleTasks.length}/{tasks.length})
               </h2>
-              {tasks.length === 0 ? (
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+                <SearchInput
+                  value={taskSearch}
+                  onChange={setTaskSearch}
+                  placeholder="Search tasks by title…"
+                />
+                <select
+                  value={taskStatus}
+                  onChange={(e) => setTaskStatus(e.target.value as TaskStatus | 'all')}
+                  className="rounded-xl border-2 border-textMuted/30 px-3 py-2 text-body focus:border-primary focus:outline-none"
+                >
+                  <option value="all">All statuses</option>
+                  <option value="available">To do</option>
+                  <option value="pending_approval">Pending approval</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              {visibleTasks.length === 0 ? (
                 <p className="rounded-2xl bg-surface p-6 text-center text-textMuted shadow-card">
-                  No tasks yet.
+                  {tasks.length === 0 ? 'No tasks yet.' : 'No tasks match.'}
                 </p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  {tasks.map((task) => (
+                  {visibleTasks.map((task) => (
                     <div
                       key={task.id}
                       className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
@@ -292,15 +433,22 @@ export function AdminPanelPage() {
             {/* Store items */}
             <section>
               <h2 className="mb-3 text-title font-extrabold text-gray-800">
-                All Store Items ({storeItems.length})
+                Store Items ({visibleStoreItems.length}/{storeItems.length})
               </h2>
-              {storeItems.length === 0 ? (
+              <div className="mb-4">
+                <SearchInput
+                  value={storeSearch}
+                  onChange={setStoreSearch}
+                  placeholder="Search store items by name…"
+                />
+              </div>
+              {visibleStoreItems.length === 0 ? (
                 <p className="rounded-2xl bg-surface p-6 text-center text-textMuted shadow-card">
-                  No store items yet.
+                  {storeItems.length === 0 ? 'No store items yet.' : 'No items match.'}
                 </p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  {storeItems.map((item) => (
+                  {visibleStoreItems.map((item) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
@@ -346,6 +494,16 @@ export function AdminPanelPage() {
         onConfirm={runPending}
         onCancel={() => setPending(null)}
       />
+
+      {editUser && (
+        <EditUserModal user={editUser} onClose={() => setEditUser(null)} />
+      )}
+      {historyChild && (
+        <StarHistoryModal
+          child={historyChild}
+          onClose={() => setHistoryChild(null)}
+        />
+      )}
     </div>
   )
 }

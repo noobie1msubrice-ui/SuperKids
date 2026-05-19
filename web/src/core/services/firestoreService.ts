@@ -212,6 +212,11 @@ export const firestoreService = {
     await updateDoc(doc(db, COLLECTIONS.users, uid), { displayName });
   },
 
+  /** Updates the signed-in user's own profile picture URL. */
+  async updatePhotoUrl(uid: string, photoUrl: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.users, uid), { photoUrl });
+  },
+
   // ---------- admin (full-control) queries & writes ----------
 
   /** Every user account — admin only. */

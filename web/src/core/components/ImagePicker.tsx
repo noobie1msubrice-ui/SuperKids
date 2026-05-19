@@ -1,4 +1,5 @@
-import { useId, useRef, useState } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
+import { clsx } from 'clsx';
 import { SecondaryButton } from './Button';
 
 interface ImagePickerProps {
@@ -7,10 +8,23 @@ interface ImagePickerProps {
   /** Called with the chosen file, or null when the image is cleared. */
   onChange: (file: File | null) => void;
   error?: string;
+  /** Field label shown above the picker. */
+  label?: string;
+  /** Shown in the preview box when no image is set. */
+  placeholder?: ReactNode;
+  /** Renders the preview as a circle (for avatars) instead of a rounded square. */
+  circular?: boolean;
 }
 
-/** Picks an optional store-item image and shows a live preview. */
-export function ImagePicker({ currentUrl, onChange, error }: ImagePickerProps) {
+/** Picks an image (store item or avatar) and shows a live preview. */
+export function ImagePicker({
+  currentUrl,
+  onChange,
+  error,
+  label = 'Image (optional)',
+  placeholder = <span className="text-3xl" aria-hidden>🎁</span>,
+  circular = false,
+}: ImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const id = useId();
   const [preview, setPreview] = useState<string | undefined>(currentUrl);
@@ -30,20 +44,23 @@ export function ImagePicker({ currentUrl, onChange, error }: ImagePickerProps) {
   return (
     <div className="flex flex-col gap-2">
       <span id={id} className="text-body font-semibold">
-        Image (optional)
+        {label}
       </span>
       <div className="flex items-center gap-4" aria-labelledby={id}>
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl bg-bgLight">
+        <div
+          className={clsx(
+            'flex h-24 w-24 items-center justify-center overflow-hidden bg-bgLight',
+            circular ? 'rounded-full' : 'rounded-xl',
+          )}
+        >
           {preview ? (
             <img
               src={preview}
-              alt="Selected store item"
+              alt="Selected"
               className="h-full w-full object-cover"
             />
           ) : (
-            <span className="text-3xl" aria-hidden>
-              🎁
-            </span>
+            placeholder
           )}
         </div>
         <div className="flex flex-col gap-2">

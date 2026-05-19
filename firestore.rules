@@ -53,9 +53,9 @@ service cloud.firestore {
           && !('parentId' in request.resource.data)
           && !('starBalance' in request.resource.data))
       );
-      // Self-service updates: only displayName / fcmToken may change.
+      // Self-service updates: only displayName / fcmToken / photoUrl may change.
       allow update: if isSignedIn() && uid == myUid()
-                    && changedKeys().hasOnly(['displayName', 'fcmToken']);
+                    && changedKeys().hasOnly(['displayName', 'fcmToken', 'photoUrl']);
       allow delete: if false;  // children removed via deleteChildAccount function
     }
 

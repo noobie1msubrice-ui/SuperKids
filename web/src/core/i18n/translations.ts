@@ -197,6 +197,9 @@ const en: Dict = {
   'settings.wrongPassword': 'Your current password is wrong.',
   'settings.passwordTooShort': 'Password must be at least {min} characters.',
   'settings.update': 'Update',
+  'settings.profilePhoto': 'Profile picture',
+  'settings.savePhoto': 'Save picture',
+  'settings.photoUpdated': 'Profile picture updated.',
 
   'admin.title': 'Winkz Admin',
   'admin.dialogTitle': 'Admin',
@@ -390,6 +393,9 @@ const vi: Dict = {
   'settings.wrongPassword': 'Mật khẩu hiện tại không đúng.',
   'settings.passwordTooShort': 'Mật khẩu phải có ít nhất {min} ký tự.',
   'settings.update': 'Cập nhật',
+  'settings.profilePhoto': 'Ảnh đại diện',
+  'settings.savePhoto': 'Lưu ảnh',
+  'settings.photoUpdated': 'Đã cập nhật ảnh đại diện.',
 
   'admin.title': 'Quản trị Winkz',
   'admin.dialogTitle': 'Quản trị',

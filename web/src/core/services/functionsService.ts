@@ -62,6 +62,11 @@ export const functionsService = {
     'deleteChildAccount',
   ),
 
+  adminUpdateUser: callable<
+    { uid: string; displayName?: string; email?: string; newPassword?: string },
+    { success: true }
+  >('adminUpdateUser'),
+
   approveTask: callable<{ taskId: string }, { success: true; newBalance: number }>(
     'approveTask',
   ),

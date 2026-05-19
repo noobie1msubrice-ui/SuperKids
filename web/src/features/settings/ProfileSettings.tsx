@@ -5,10 +5,12 @@ import { useTranslation } from '../../core/i18n/LanguageContext'
 import { LANGUAGES } from '../../core/i18n/translations'
 import { firestoreService } from '../../core/services/firestoreService'
 import { authService } from '../../core/services/authService'
+import { storageService } from '../../core/services/storageService'
 import { Card } from '../../core/components/Card'
 import { TextField } from '../../core/components/TextField'
 import { PrimaryButton } from '../../core/components/Button'
 import { FormError } from '../../core/components/FormError'
+import { ImagePicker } from '../../core/components/ImagePicker'
 import { LIMITS } from '../../core/utils/constants'
 
 /**
@@ -30,7 +32,30 @@ export function ProfileSettings() {
   const [pwSaving, setPwSaving] = useState(false)
   const [pwError, setPwError] = useState<string | null>(null)
 
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoDirty, setPhotoDirty] = useState(false)
+  const [photoSaving, setPhotoSaving] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+
   if (!profile) return null
+
+  async function savePhoto(): Promise<void> {
+    setPhotoSaving(true)
+    setPhotoError(null)
+    try {
+      const url = photoFile
+        ? await storageService.uploadAvatar(profile!.id, photoFile)
+        : ''
+      await firestoreService.updatePhotoUrl(profile!.id, url)
+      showToast(t('settings.photoUpdated'), 'success')
+      setPhotoDirty(false)
+      setPhotoFile(null)
+    } catch (err) {
+      setPhotoError((err as Error).message || t('common.errorGeneric'))
+    } finally {
+      setPhotoSaving(false)
+    }
+  }
 
   async function saveName(): Promise<void> {
     const trimmed = name.trim()
@@ -82,8 +107,36 @@ export function ProfileSettings() {
     <Card>
       <h2 className="mb-4 text-section font-bold">⚙️ {t('settings.title')}</h2>
 
+      {/* Profile picture */}
+      <div className="mb-6 flex flex-col gap-3">
+        <FormError message={photoError} />
+        <ImagePicker
+          currentUrl={profile.photoUrl}
+          label={t('settings.profilePhoto')}
+          circular
+          placeholder={
+            <span className="text-3xl" aria-hidden>
+              🙂
+            </span>
+          }
+          onChange={(file) => {
+            setPhotoFile(file)
+            setPhotoDirty(true)
+          }}
+        />
+        {photoDirty && (
+          <PrimaryButton
+            onClick={savePhoto}
+            loading={photoSaving}
+            className="min-h-[44px] self-start px-5"
+          >
+            {t('settings.savePhoto')}
+          </PrimaryButton>
+        )}
+      </div>
+
       {/* Language */}
-      <div className="mb-6">
+      <div className="mb-6 border-t border-gray-100 pt-5">
         <div className="mb-2 text-body font-semibold">{t('settings.language')}</div>
         <div className="flex gap-2">
           {LANGUAGES.map((l) => (

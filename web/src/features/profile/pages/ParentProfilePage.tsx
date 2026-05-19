@@ -20,8 +20,16 @@ export function ParentProfilePage() {
 
       <Card>
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-3xl">
-            👨‍👩‍👧
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-3xl">
+            {profile.photoUrl ? (
+              <img
+                src={profile.photoUrl}
+                alt={profile.displayName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              '👨‍👩‍👧'
+            )}
           </div>
           <div>
             <p className="text-section font-bold">{profile.displayName}</p>

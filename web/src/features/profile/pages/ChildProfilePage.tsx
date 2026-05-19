@@ -34,8 +34,16 @@ export function ChildProfilePage() {
 
       <Card>
         <div className="flex flex-col items-center gap-3 py-4">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary/10 text-4xl">
-            🧒
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-secondary/10 text-4xl">
+            {profile.photoUrl ? (
+              <img
+                src={profile.photoUrl}
+                alt={profile.displayName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              '🧒'
+            )}
           </div>
           <p className="text-title font-extrabold">{profile.displayName}</p>
           <StarChip count={balance} size="lg" />

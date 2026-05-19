@@ -5,6 +5,7 @@ import { PageHeader } from '../../../core/components/PageHeader'
 import { Card } from '../../../core/components/Card'
 import { DangerButton } from '../../../core/components/Button'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
+import { ParentIcon } from '../../../core/components/icons'
 import { ProfileSettings } from '../../settings/ProfileSettings'
 
 export function ParentProfilePage() {
@@ -28,7 +29,7 @@ export function ParentProfilePage() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              '👨‍👩‍👧'
+              <ParentIcon className="h-10 w-10 text-primary" />
             )}
           </div>
           <div>

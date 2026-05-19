@@ -12,6 +12,7 @@ import { Modal } from '../../../core/components/Modal'
 import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { EmptyState } from '../../../core/components/EmptyState'
+import { RewardCelebration } from '../../../core/components/RewardCelebration'
 import type { StoreItem } from '../../../models/storeItem'
 
 export function ChildStorePage() {
@@ -21,6 +22,7 @@ export function ChildStorePage() {
   const { data: items, loading, error } = useChildStore()
   const [buyTarget, setBuyTarget] = useState<StoreItem | null>(null)
   const [buying, setBuying] = useState(false)
+  const [celebration, setCelebration] = useState<string | null>(null)
 
   const balance = profile?.starBalance ?? 0
 
@@ -29,8 +31,10 @@ export function ChildStorePage() {
     setBuying(true)
     try {
       const result = await functionsService.purchaseStoreItem({ storeItemId: buyTarget.id })
-      showToast(t('store.bought', { count: result.newBalance }), 'success')
+      const itemName = buyTarget.name
       setBuyTarget(null)
+      setCelebration(`${itemName}!`)
+      showToast(t('store.bought', { count: result.newBalance }), 'success')
     } catch (err) {
       showToast((err as Error).message, 'error')
     } finally {
@@ -109,6 +113,12 @@ export function ChildStorePage() {
           </div>
         )}
       </Modal>
+
+      <RewardCelebration
+        open={celebration !== null}
+        message={celebration ?? ''}
+        onDone={() => setCelebration(null)}
+      />
     </div>
   )
 }

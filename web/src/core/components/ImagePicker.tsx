@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { clsx } from 'clsx';
 import { SecondaryButton } from './Button';
+import { GiftIcon } from './icons';
 
 interface ImagePickerProps {
   /** An existing image URL to show before the user picks a new file. */
@@ -22,7 +23,7 @@ export function ImagePicker({
   onChange,
   error,
   label = 'Image (optional)',
-  placeholder = <span className="text-3xl" aria-hidden>🎁</span>,
+  placeholder = <GiftIcon className="h-10 w-10 text-textMuted" />,
   circular = false,
 }: ImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);

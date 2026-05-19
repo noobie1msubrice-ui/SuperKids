@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMyTasks, pendingFirst } from '../hooks/useTasks'
 import { firestoreService } from '../../../core/services/firestoreService'
 import { useToast } from '../../../core/context/ToastContext'
@@ -8,12 +8,37 @@ import { PageHeader } from '../../../core/components/PageHeader'
 import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { EmptyState } from '../../../core/components/EmptyState'
+import { RewardCelebration } from '../../../core/components/RewardCelebration'
+import type { TaskStatus } from '../../../models/task'
 
 export function ChildTasksPage() {
   const { showToast } = useToast()
   const { t } = useTranslation()
   const { data: tasks, loading, error } = useMyTasks()
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
+  const [celebration, setCelebration] = useState<string | null>(null)
+
+  // Track previous task statuses so we can fire the celebration the moment a
+  // task flips from non-completed to completed (parent just approved it).
+  // The first snapshot after mount only seeds the map — already-completed
+  // tasks on page load never re-trigger the celebration.
+  const prevStatuses = useRef<Map<string, TaskStatus> | null>(null)
+  useEffect(() => {
+    if (loading) return
+    const snapshot = new Map(tasks.map((task) => [task.id, task.status]))
+    if (prevStatuses.current === null) {
+      prevStatuses.current = snapshot
+      return
+    }
+    for (const task of tasks) {
+      const prev = prevStatuses.current.get(task.id)
+      if (prev && prev !== 'completed' && task.status === 'completed') {
+        setCelebration(`+${task.starReward} Stars!`)
+        break
+      }
+    }
+    prevStatuses.current = snapshot
+  }, [tasks, loading])
 
   async function handleDone(taskId: string): Promise<void> {
     setBusyTaskId(taskId)
@@ -52,6 +77,12 @@ export function ChildTasksPage() {
           ))}
         </div>
       )}
+
+      <RewardCelebration
+        open={celebration !== null}
+        message={celebration ?? ''}
+        onDone={() => setCelebration(null)}
+      />
     </div>
   )
 }

@@ -11,6 +11,7 @@ import { TextField } from '../../core/components/TextField'
 import { PrimaryButton } from '../../core/components/Button'
 import { FormError } from '../../core/components/FormError'
 import { ImagePicker } from '../../core/components/ImagePicker'
+import { SmileIcon } from '../../core/components/icons'
 import { LIMITS } from '../../core/utils/constants'
 
 /**
@@ -114,11 +115,7 @@ export function ProfileSettings() {
           currentUrl={profile.photoUrl}
           label={t('settings.profilePhoto')}
           circular
-          placeholder={
-            <span className="text-3xl" aria-hidden>
-              🙂
-            </span>
-          }
+          placeholder={<SmileIcon className="h-12 w-12 text-textMuted" />}
           onChange={(file) => {
             setPhotoFile(file)
             setPhotoDirty(true)

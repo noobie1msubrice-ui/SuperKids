@@ -10,6 +10,7 @@ import { TransactionList } from '../../../core/components/TransactionList'
 import { DangerButton } from '../../../core/components/Button'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { LoadingView } from '../../../core/components/LoadingView'
+import { KidIcon } from '../../../core/components/icons'
 import { ProfileSettings } from '../../settings/ProfileSettings'
 
 export function ChildProfilePage() {
@@ -42,7 +43,7 @@ export function ChildProfilePage() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              '🧒'
+              <KidIcon className="h-12 w-12 text-secondary" />
             )}
           </div>
           <p className="text-title font-extrabold">{profile.displayName}</p>

@@ -4,6 +4,8 @@ import { AuthScreen } from '../components/AuthScreen';
 import { AdminAuthModal } from '../../admin/components/AdminAuthModal';
 import { useAuth } from '../../../core/context/AuthContext';
 import { useTranslation } from '../../../core/i18n/LanguageContext';
+import { ParentIcon, KidIcon } from '../../../core/components/icons';
+import { sound } from '../../../core/utils/sound';
 
 /** The first screen: choose the Parent or Kid experience (doc 06 §4.2). */
 export function RoleSelectPage() {
@@ -39,24 +41,30 @@ export function RoleSelectPage() {
       <div className="flex flex-col gap-3">
         <button
           type="button"
-          onClick={() => navigate('/parent/login')}
-          className="flex items-center gap-4 rounded-2xl border-2 border-primary/20 bg-bgLight p-4 text-left transition-colors hover:border-primary"
+          onClick={() => {
+            sound.click();
+            navigate('/parent/login');
+          }}
+          className="group flex items-center gap-4 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-bgLight p-5 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-cardHover active:scale-[0.98]"
         >
-          <span className="text-4xl" aria-hidden>
-            👨‍👩‍👧
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
+            <ParentIcon className="h-8 w-8" />
           </span>
-          <span className="text-section">{t('role.parent')}</span>
+          <span className="text-section font-bold">{t('role.parent')}</span>
         </button>
 
         <button
           type="button"
-          onClick={() => navigate('/child/login')}
-          className="flex items-center gap-4 rounded-2xl border-2 border-secondary/20 bg-bgLight p-4 text-left transition-colors hover:border-secondary"
+          onClick={() => {
+            sound.click();
+            navigate('/child/login');
+          }}
+          className="group flex items-center gap-4 rounded-2xl border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 to-bgLight p-5 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-secondary hover:shadow-cardHover active:scale-[0.98]"
         >
-          <span className="text-4xl" aria-hidden>
-            🧒
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/15 text-secondary transition-colors group-hover:bg-secondary/25">
+            <KidIcon className="h-8 w-8" />
           </span>
-          <span className="text-section">{t('role.child')}</span>
+          <span className="text-section font-bold">{t('role.child')}</span>
         </button>
       </div>
       </AuthScreen>

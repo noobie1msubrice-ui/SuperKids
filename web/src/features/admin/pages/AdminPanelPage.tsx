@@ -11,6 +11,7 @@ import { ErrorView } from '../../../core/components/ErrorView'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { StatusBadge } from '../../../core/components/StatusBadge'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
+import { AdminIcon } from '../../../core/components/icons'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
 import type { UserProfile } from '../../../models/userProfile'
 import type { TaskStatus } from '../../../models/task'
@@ -210,7 +211,7 @@ export function AdminPanelPage() {
       <header className="bg-primary text-white shadow-card">
         <div className="mx-auto flex max-w-content items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="text-xl">🛠️</span>
+            <AdminIcon className="h-6 w-6" />
             <span className="text-section font-extrabold">Winkz Admin</span>
           </div>
           <div className="flex items-center gap-3">

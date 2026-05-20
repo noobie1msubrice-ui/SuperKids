@@ -9,6 +9,16 @@ import { translations, type Lang } from './translations'
 
 const STORAGE_KEY = 'winkz.lang'
 
+/**
+ * True once the user has explicitly chosen a language (the first-visit
+ * language picker writes the storage key). Until then we route them to the
+ * picker before any login UI.
+ */
+export function hasPickedLanguage(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem(STORAGE_KEY) !== null
+}
+
 type Vars = Record<string, string | number>
 
 interface LanguageContextValue {

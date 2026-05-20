@@ -38,6 +38,44 @@ export default {
       maxWidth: {
         content: '960px',
       },
+      keyframes: {
+        'pop-in': {
+          '0%': { transform: 'scale(0.94)', opacity: '0' },
+          '60%': { transform: 'scale(1.015)' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'fade-in-up': {
+          '0%': { transform: 'translateY(12px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(-7deg)' },
+          '75%': { transform: 'rotate(7deg)' },
+        },
+        'star-pop': {
+          '0%': { transform: 'scale(0) rotate(0deg)', opacity: '0' },
+          '50%': { opacity: '1' },
+          '100%': { transform: 'scale(1.4) rotate(20deg)', opacity: '0' },
+        },
+        'confetti-fall': {
+          '0%': { transform: 'translateY(-20vh) rotate(0deg)', opacity: '1' },
+          '100%': { transform: 'translateY(100vh) rotate(540deg)', opacity: '0' },
+        },
+        'pulse-grow': {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.25)' },
+          '100%': { transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        'pop-in': 'pop-in 260ms ease-out both',
+        'fade-in-up': 'fade-in-up 320ms ease-out both',
+        wiggle: 'wiggle 500ms ease-in-out',
+        'star-pop': 'star-pop 900ms ease-out forwards',
+        confetti: 'confetti-fall 1600ms linear forwards',
+        'pulse-grow': 'pulse-grow 450ms ease-out',
+      },
     },
   },
   plugins: [],

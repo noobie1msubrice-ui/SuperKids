@@ -33,7 +33,8 @@ const CHILD_NAV: NavItem[] = [
 
 /**
  * Primary navigation: a horizontal tab bar on tablet/desktop, a fixed bottom
- * bar on phones (doc 06 §3).
+ * bar on phones (doc 06 §3). Active item gets a bright pill so the current
+ * section is obvious at a glance.
  */
 export function Navigation({ role }: { role: UserRole }) {
   const { t } = useTranslation();
@@ -43,25 +44,25 @@ export function Navigation({ role }: { role: UserRole }) {
     <nav
       aria-label="Primary"
       className={clsx(
-        'bg-surface shadow-card',
+        'bg-surface/85 shadow-card backdrop-blur',
         // phone: fixed bottom bar
         'fixed inset-x-0 bottom-0 z-30 border-t border-textMuted/10',
         // tablet/desktop: static bar under the header
         'md:static md:border-t-0',
       )}
     >
-      <ul className="mx-auto flex max-w-content items-stretch justify-around md:justify-start md:gap-2 md:px-4">
+      <ul className="mx-auto flex max-w-content items-stretch justify-around p-1 md:justify-start md:gap-2 md:px-4 md:py-2">
         {items.map(({ to, labelKey, Icon }) => (
           <li key={to} className="flex-1 md:flex-none">
             <NavLink
               to={to}
               className={({ isActive }) =>
                 clsx(
-                  'flex flex-col items-center gap-0.5 py-2 text-caption font-semibold',
-                  'md:flex-row md:gap-2 md:rounded-xl md:px-4 md:py-3 md:text-body',
-                  'min-h-[56px] justify-center transition-colors',
+                  'mx-0.5 flex flex-col items-center gap-0.5 rounded-2xl py-2 text-caption font-bold transition-all duration-150',
+                  'md:flex-row md:gap-2 md:px-4 md:py-3 md:text-body',
+                  'min-h-[56px] justify-center',
                   isActive
-                    ? 'text-primary md:bg-primary/10'
+                    ? 'bg-gradient-to-br from-primary to-[#7C7CEC] text-white shadow-pop'
                     : 'text-textMuted hover:text-primary',
                 )
               }

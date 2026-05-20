@@ -19,100 +19,16 @@
   }
 }
 
-@layer utilities {
-  /* Star-burst celebration keyframes used by RewardCelebration. */
-  @keyframes star-pop {
-    0% {
-      transform: scale(0) rotate(0deg);
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.4) rotate(20deg);
-      opacity: 0;
-    }
-  }
-
-  @keyframes confetti-fall {
-    0% {
-      transform: translateY(-20vh) rotate(0deg);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(100vh) rotate(540deg);
-      opacity: 0;
-    }
-  }
-
-  .animate-star-pop {
-    animation: star-pop 900ms ease-out forwards;
-  }
-
-  .animate-confetti {
-    animation: confetti-fall 1600ms linear forwards;
-  }
-
-  /* Catchy UI motion: cards/screens ease in, controls react to taps. */
-  @keyframes pop-in {
-    0% {
-      transform: scale(0.94);
-      opacity: 0;
-    }
-    60% {
-      transform: scale(1.015);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes fade-in-up {
-    0% {
-      transform: translateY(12px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes wiggle {
-    0%,
-    100% {
-      transform: rotate(0deg);
-    }
-    25% {
-      transform: rotate(-7deg);
-    }
-    75% {
-      transform: rotate(7deg);
-    }
-  }
-
-  .animate-pop-in {
-    animation: pop-in 260ms ease-out both;
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 320ms ease-out both;
-  }
-
-  .animate-wiggle {
-    animation: wiggle 500ms ease-in-out;
-  }
-
-  /* Respect users who prefer reduced motion. */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-pop-in,
-    .animate-fade-in-up,
-    .animate-wiggle,
-    .animate-star-pop,
-    .animate-confetti {
-      animation: none;
-    }
+/* Respect users who prefer reduced motion — silence every keyframe animation
+   we ship (defined in tailwind.config.ts theme.extend.keyframes). */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop-in,
+  .animate-fade-in-up,
+  .animate-wiggle,
+  .animate-star-pop,
+  .animate-confetti,
+  .animate-pulse-grow,
+  .animate-spin {
+    animation: none !important;
   }
 }

@@ -11,6 +11,8 @@ export interface UserProfile {
   email: string;
   createdAt: Timestamp | null;
   photoUrl?: string;
+  /** Heartbeat timestamp — drives the online/offline dot in the admin panel. */
+  lastActiveAt?: Timestamp;
   // Child-only fields.
   parentId?: string;
   starBalance?: number;

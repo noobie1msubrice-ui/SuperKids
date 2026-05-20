@@ -11,6 +11,9 @@ import { authService } from '../services/authService';
 import { firestoreService } from '../services/firestoreService';
 import type { UserProfile } from '../../models/userProfile';
 
+/** How often a signed-in client heartbeats lastActiveAt (ms). */
+const HEARTBEAT_MS = 30_000;
+
 interface AuthContextValue {
   /** The raw Firebase Auth user, or null when signed out. */
   firebaseUser: User | null;
@@ -67,6 +70,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubProfile?.();
     };
   }, []);
+
+  // Heartbeat lastActiveAt while signed in so the admin panel can show
+  // online/offline. We write immediately and then every 30s; failures are
+  // swallowed (a network blip shouldn't crash the session).
+  useEffect(() => {
+    if (!firebaseUser) return;
+    const uid = firebaseUser.uid;
+    const ping = (): void => {
+      firestoreService.updateLastActive(uid).catch(() => {});
+    };
+    ping();
+    const interval = window.setInterval(ping, HEARTBEAT_MS);
+    return () => window.clearInterval(interval);
+  }, [firebaseUser]);
 
   const logout = () => authService.logout();
 

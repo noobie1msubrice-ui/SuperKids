@@ -14,37 +14,51 @@ interface EditUserModalProps {
   onClose: () => void
 }
 
-/** Admin dialog to change any account's name, login email and password. */
+/**
+ * Admin dialog to change any account's name, login email and/or password.
+ * Every field is optional: each one defaults to the user's current value
+ * (shown as a placeholder) and the admin only fills in the fields they want
+ * to change. Submitting with all fields blank shows "Nothing to change".
+ */
 export function EditUserModal({ user, onClose }: EditUserModalProps) {
   const { showToast } = useToast()
-  const [displayName, setDisplayName] = useState(user.displayName)
-  const [email, setEmail] = useState(user.email)
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function save(): Promise<void> {
-    if (!displayName.trim()) {
-      setError('Name cannot be empty.')
-      return
-    }
-    if (!email.trim()) {
-      setError('Email cannot be empty.')
-      return
-    }
-    if (newPassword && newPassword.length < LIMITS.passwordMin) {
-      setError(`Password must be at least ${LIMITS.passwordMin} characters.`)
-      return
-    }
-    setSaving(true)
     setError(null)
+    const update: {
+      uid: string
+      displayName?: string
+      email?: string
+      newPassword?: string
+    } = { uid: user.id }
+
+    const dn = displayName.trim()
+    if (dn) update.displayName = dn
+
+    const em = email.trim()
+    if (em) update.email = em
+
+    if (newPassword) {
+      if (newPassword.length < LIMITS.passwordMin) {
+        setError(`Password must be at least ${LIMITS.passwordMin} characters.`)
+        return
+      }
+      update.newPassword = newPassword
+    }
+
+    if (!update.displayName && !update.email && !update.newPassword) {
+      setError('Nothing to change — fill in any field you want to update.')
+      return
+    }
+
+    setSaving(true)
     try {
-      await functionsService.adminUpdateUser({
-        uid: user.id,
-        displayName: displayName.trim(),
-        email: email.trim(),
-        newPassword: newPassword || undefined,
-      })
+      await functionsService.adminUpdateUser(update)
       showToast('Account updated.', 'success')
       onClose()
     } catch (err) {
@@ -57,21 +71,27 @@ export function EditUserModal({ user, onClose }: EditUserModalProps) {
   return (
     <Modal open onClose={onClose} title={`Edit ${user.displayName}`}>
       <div className="flex flex-col gap-4">
+        <p className="rounded-xl bg-primary/5 px-3 py-2 text-caption text-textMuted">
+          Fill in only the fields you want to change — leave the rest blank.
+        </p>
         <FormError message={error} />
         <TextField
           label="Display name"
+          placeholder={user.displayName}
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
         />
         <TextField
           label="Login email"
           type="email"
+          placeholder={user.email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="New password (leave blank to keep)"
+          label="New password"
           type="password"
+          placeholder="leave blank to keep current"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />

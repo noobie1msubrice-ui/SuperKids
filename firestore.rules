@@ -53,9 +53,13 @@ service cloud.firestore {
           && !('parentId' in request.resource.data)
           && !('starBalance' in request.resource.data))
       );
-      // Self-service updates: only displayName / fcmToken / photoUrl may change.
+      // Self-service updates: only displayName / fcmToken / photoUrl /
+      // lastActiveAt may change. lastActiveAt is heartbeated by the client
+      // every 30s to drive the admin's online/offline indicator.
       allow update: if isSignedIn() && uid == myUid()
-                    && changedKeys().hasOnly(['displayName', 'fcmToken', 'photoUrl']);
+                    && changedKeys().hasOnly([
+                      'displayName', 'fcmToken', 'photoUrl', 'lastActiveAt'
+                    ]);
       allow delete: if false;  // children removed via deleteChildAccount function
     }
 
@@ -120,6 +124,14 @@ service cloud.firestore {
         && request.resource.data.status == 'redeemed'
         && changedKeys().hasOnly(['status', 'redeemedAt']);
       allow delete: if false;
+    }
+
+    // ---------- meta (admin-authored, read by everyone signed-in) ----------
+    // Holds the single `adminMessage` doc that drives the global broadcast
+    // banner. Admins write; any signed-in user reads.
+    match /meta/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     // ---------- transactions (ledger) ----------

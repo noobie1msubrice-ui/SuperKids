@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   type Query,
@@ -215,6 +216,34 @@ export const firestoreService = {
   /** Updates the signed-in user's own profile picture URL. */
   async updatePhotoUrl(uid: string, photoUrl: string): Promise<void> {
     await updateDoc(doc(db, COLLECTIONS.users, uid), { photoUrl });
+  },
+
+  /** Heartbeats the signed-in user's lastActiveAt — drives the online dot. */
+  async updateLastActive(uid: string): Promise<void> {
+    await updateDoc(doc(db, COLLECTIONS.users, uid), {
+      lastActiveAt: serverTimestamp(),
+    });
+  },
+
+  // ---------- admin broadcast ----------
+
+  /** Reference to the single meta/adminMessage doc that drives the banner. */
+  adminBroadcastDocRef() {
+    return doc(db, 'meta', 'adminMessage');
+  },
+
+  /** Admin: publish a broadcast message visible to every signed-in user. */
+  async setAdminBroadcast(text: string, sentByUid: string): Promise<void> {
+    await setDoc(doc(db, 'meta', 'adminMessage'), {
+      text,
+      sentBy: sentByUid,
+      sentAt: serverTimestamp(),
+    });
+  },
+
+  /** Admin: clear the broadcast (banner stops showing for new viewers). */
+  async clearAdminBroadcast(): Promise<void> {
+    await deleteDoc(doc(db, 'meta', 'adminMessage'));
   },
 
   // ---------- admin (full-control) queries & writes ----------

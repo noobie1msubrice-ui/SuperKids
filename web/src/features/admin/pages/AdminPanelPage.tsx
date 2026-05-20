@@ -10,11 +10,21 @@ import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
 import { StatusBadge } from '../../../core/components/StatusBadge'
+import { UserAvatar } from '../../../core/components/UserAvatar'
+import { PrimaryButton } from '../../../core/components/Button'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
 import { AdminIcon } from '../../../core/components/icons'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
+import { useAdminBroadcast } from '../../../core/hooks/useAdminBroadcast'
 import type { UserProfile } from '../../../models/userProfile'
 import type { TaskStatus } from '../../../models/task'
+
+/** A user is considered online if they heartbeated in the last 75 seconds. */
+const ONLINE_THRESHOLD_MS = 75_000
+function isOnline(user: UserProfile): boolean {
+  if (!user.lastActiveAt) return false
+  return Date.now() - user.lastActiveAt.toMillis() < ONLINE_THRESHOLD_MS
+}
 
 interface PendingAction {
   title: string
@@ -118,6 +128,39 @@ export function AdminPanelPage() {
   const [taskSearch, setTaskSearch] = useState('')
   const [taskStatus, setTaskStatus] = useState<TaskStatus | 'all'>('all')
   const [storeSearch, setStoreSearch] = useState('')
+
+  // Broadcast composer: writes meta/adminMessage; every signed-in user sees it
+  // as a top banner until they dismiss.
+  const activeBroadcast = useAdminBroadcast()
+  const [bcastText, setBcastText] = useState('')
+  const [bcastBusy, setBcastBusy] = useState(false)
+
+  async function sendBroadcast(): Promise<void> {
+    const text = bcastText.trim()
+    if (!text || !profile) return
+    setBcastBusy(true)
+    try {
+      await firestoreService.setAdminBroadcast(text, profile.id)
+      showToast('Broadcast sent.', 'success')
+      setBcastText('')
+    } catch {
+      showToast('Could not send the broadcast.', 'error')
+    } finally {
+      setBcastBusy(false)
+    }
+  }
+
+  async function clearBroadcast(): Promise<void> {
+    setBcastBusy(true)
+    try {
+      await firestoreService.clearAdminBroadcast()
+      showToast('Broadcast cleared.', 'success')
+    } catch {
+      showToast('Could not clear the broadcast.', 'error')
+    } finally {
+      setBcastBusy(false)
+    }
+  }
 
   const nameOf = useMemo(() => {
     const map: Record<string, string> = {}
@@ -241,6 +284,51 @@ export function AdminPanelPage() {
               <Stat label="Store items" value={storeItems.length} />
             </section>
 
+            {/* Broadcast composer */}
+            <section>
+              <h2 className="mb-3 text-title font-extrabold text-gray-800">
+                Broadcast message
+              </h2>
+              <div className="rounded-2xl bg-surface p-4 shadow-card">
+                <textarea
+                  value={bcastText}
+                  onChange={(e) => setBcastText(e.target.value)}
+                  placeholder="Type a message to send to every signed-in user…"
+                  rows={3}
+                  className="w-full rounded-xl border-2 border-textMuted/30 px-4 py-2 text-body focus:border-primary focus:outline-none"
+                />
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {activeBroadcast && (
+                    <span className="mr-auto truncate text-caption text-textMuted">
+                      Active: "
+                      {activeBroadcast.text.length > 60
+                        ? `${activeBroadcast.text.slice(0, 60)}…`
+                        : activeBroadcast.text}
+                      "
+                    </span>
+                  )}
+                  {activeBroadcast && (
+                    <button
+                      type="button"
+                      onClick={clearBroadcast}
+                      disabled={bcastBusy}
+                      className="rounded-lg bg-textMuted/10 px-3 py-1.5 text-caption font-bold text-textMuted hover:bg-textMuted/20 disabled:opacity-50"
+                    >
+                      Clear
+                    </button>
+                  )}
+                  <PrimaryButton
+                    onClick={sendBroadcast}
+                    loading={bcastBusy}
+                    disabled={!bcastText.trim()}
+                    className="min-h-[44px] px-4"
+                  >
+                    Send to all
+                  </PrimaryButton>
+                </div>
+              </div>
+            </section>
+
             {/* Users */}
             <section>
               <h2 className="mb-3 text-title font-extrabold text-gray-800">Users</h2>
@@ -269,12 +357,15 @@ export function AdminPanelPage() {
                     return (
                       <div key={parent.id} className="rounded-2xl bg-surface p-4 shadow-card">
                         <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className="text-section font-bold text-gray-800">
-                              {parent.displayName}
-                            </div>
-                            <div className="truncate text-caption text-textMuted">
-                              {parent.email}
+                          <div className="flex min-w-0 items-center gap-3">
+                            <UserAvatar profile={parent} online={isOnline(parent)} />
+                            <div className="min-w-0">
+                              <div className="text-section font-bold text-gray-800">
+                                {parent.displayName}
+                              </div>
+                              <div className="truncate text-caption text-textMuted">
+                                {parent.email}
+                              </div>
                             </div>
                           </div>
                           <UserActions
@@ -293,12 +384,15 @@ export function AdminPanelPage() {
                                 key={kid.id}
                                 className="flex flex-wrap items-center justify-between gap-2"
                               >
-                                <div className="min-w-0">
-                                  <div className="font-bold text-gray-700">
-                                    🧒 {kid.displayName}
-                                  </div>
-                                  <div className="truncate text-caption text-textMuted">
-                                    {kid.email}
+                                <div className="flex min-w-0 items-center gap-3">
+                                  <UserAvatar profile={kid} online={isOnline(kid)} />
+                                  <div className="min-w-0">
+                                    <div className="font-bold text-gray-700">
+                                      {kid.displayName}
+                                    </div>
+                                    <div className="truncate text-caption text-textMuted">
+                                      {kid.email}
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
@@ -329,13 +423,16 @@ export function AdminPanelPage() {
                           key={a.id}
                           className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
                         >
-                          <div className="min-w-0">
-                            <span className="font-bold text-gray-800">
-                              🛠️ {a.displayName}
-                            </span>
-                            <span className="ml-2 text-caption text-textMuted">
-                              {a.email}
-                            </span>
+                          <div className="flex min-w-0 items-center gap-3">
+                            <UserAvatar profile={a} online={isOnline(a)} />
+                            <div className="min-w-0">
+                              <div className="font-bold text-gray-800">
+                                {a.displayName}
+                              </div>
+                              <div className="truncate text-caption text-textMuted">
+                                {a.email}
+                              </div>
+                            </div>
                           </div>
                           <UserActions
                             user={a}
@@ -351,13 +448,16 @@ export function AdminPanelPage() {
                           key={c.id}
                           className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 shadow-card"
                         >
-                          <div className="min-w-0">
-                            <span className="font-bold text-gray-800">
-                              🧒 {c.displayName}
-                            </span>
-                            <span className="ml-2 text-caption text-textMuted">
-                              {c.email} · no parent
-                            </span>
+                          <div className="flex min-w-0 items-center gap-3">
+                            <UserAvatar profile={c} online={isOnline(c)} />
+                            <div className="min-w-0">
+                              <div className="font-bold text-gray-800">
+                                {c.displayName}
+                              </div>
+                              <div className="truncate text-caption text-textMuted">
+                                {c.email} · no parent
+                              </div>
+                            </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
                             <StarBalanceEditor uid={c.id} current={c.starBalance ?? 0} />

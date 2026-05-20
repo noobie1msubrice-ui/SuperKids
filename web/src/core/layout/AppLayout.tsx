@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { Header } from './Header';
 import { Navigation } from './Navigation';
+import { BroadcastBanner } from '../components/BroadcastBanner';
 import type { UserProfile } from '../../models/userProfile';
 
 /**
@@ -21,6 +22,7 @@ export function AppLayout({ profile }: { profile: UserProfile }) {
           : 'bg-gradient-to-b from-bgLight to-primary/5',
       )}
     >
+      <BroadcastBanner />
       <Header profile={profile} />
       <Navigation role={profile.role} />
       <main className="mx-auto w-full max-w-content flex-1 px-4 py-6 pb-28 md:pb-6">

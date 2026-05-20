@@ -273,8 +273,11 @@ export function AdminPanelPage() {
       confirmLabel: 'Join',
       danger: false,
       run: async () => {
-        const { token } = await functionsService.impersonateUser({ uid: user.id })
-        await authService.signInWithToken(token)
+        const { email, link } = await functionsService.impersonateUser({
+          uid: user.id,
+          continueUrl: window.location.origin + '/',
+        })
+        await authService.signInWithLink(email, link)
         // AuthContext picks up the new user; ProtectedRoute redirects to home.
       },
     })

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { StarChip } from '../components/StarChip';
-import { StarIcon } from '../components/icons';
+import { TrophyIcon } from '../components/icons';
 import { homePathFor } from '../router/ProtectedRoute';
 import { useTranslation } from '../i18n/LanguageContext';
 import type { UserProfile } from '../../models/userProfile';
@@ -20,8 +20,8 @@ export function Header({ profile }: { profile: UserProfile }) {
           aria-label={t('nav.home')}
           className="group flex items-center gap-2 rounded-lg transition-transform hover:scale-[1.02]"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[#7C7CEC] shadow-pop transition-transform group-hover:rotate-6">
-            <StarIcon className="h-5 w-5 text-star" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#3a3a3a] to-[#1f1f1f] shadow-pop transition-transform group-hover:rotate-6">
+            <TrophyIcon className="h-6 w-6 text-star" />
           </span>
           <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-section font-extrabold text-transparent">
             Winkz

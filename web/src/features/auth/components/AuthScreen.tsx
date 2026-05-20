@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StarIcon } from '../../../core/components/icons';
+import { TrophyIcon } from '../../../core/components/icons';
 
 interface AuthScreenProps {
   title: string;
@@ -25,8 +25,8 @@ export function AuthScreen({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-bgLight to-secondary/10 px-4 py-10">
       <div className="mb-6 flex items-center gap-2">
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-[#7C7CEC] shadow-pop">
-          <StarIcon className="h-7 w-7 text-star" />
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3a3a3a] to-[#1f1f1f] shadow-pop">
+          <TrophyIcon className="h-8 w-8 text-star" />
         </span>
         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-title font-extrabold text-transparent">
           Winkz

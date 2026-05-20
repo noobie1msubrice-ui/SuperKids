@@ -214,6 +214,36 @@ export function SmileIcon({ className }: IconProps) {
   );
 }
 
+/**
+ * Gold trophy with a star on top — the Winkz brand mark. Designed in a
+ * 24-wide viewBox so it slots into the same logo bubbles as the older
+ * StarIcon. `fill="currentColor"` lets the call site colour it.
+ */
+export function TrophyIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 28"
+      fill="currentColor"
+      aria-hidden
+    >
+      {/* Star on top */}
+      <path d="M12 0.5l1.2 2.6 2.85.4-2.05 2 .5 2.85L12 7l-2.5 1.35.5-2.85-2.05-2 2.85-.4Z" />
+      {/* Left handle */}
+      <path d="M5.5 8.5C3.2 8.5 1.5 10.2 1.5 12.5C1.5 14.7 3.2 16.5 5.5 16.5V14.5C4.3 14.5 3.5 13.6 3.5 12.5C3.5 11.4 4.3 10.5 5.5 10.5Z" />
+      {/* Right handle */}
+      <path d="M18.5 8.5C20.8 8.5 22.5 10.2 22.5 12.5C22.5 14.7 20.8 16.5 18.5 16.5V14.5C19.7 14.5 20.5 13.6 20.5 12.5C20.5 11.4 19.7 10.5 18.5 10.5Z" />
+      {/* Cup body */}
+      <path d="M5 7.5h14v6.5a7 7 0 0 1-14 0z" />
+      {/* Stem */}
+      <path d="M10.5 18h3v3.5h-3z" />
+      {/* Base — two tiers */}
+      <path d="M7 21h10v2H7z" />
+      <path d="M8.5 23h7v2.5h-7z" />
+    </svg>
+  );
+}
+
 /** A wrench — used in the Admin chrome. */
 export function AdminIcon({ className }: IconProps) {
   return (

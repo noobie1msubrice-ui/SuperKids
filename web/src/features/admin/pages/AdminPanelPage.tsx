@@ -354,9 +354,9 @@ export function AdminPanelPage() {
                       type="button"
                       onClick={clearBroadcast}
                       disabled={bcastBusy}
-                      className="rounded-lg bg-textMuted/10 px-3 py-1.5 text-caption font-bold text-textMuted hover:bg-textMuted/20 disabled:opacity-50"
+                      className="rounded-lg bg-danger/10 px-3 py-1.5 text-caption font-bold text-danger hover:bg-danger/20 disabled:opacity-50"
                     >
-                      Clear
+                      Disable active message
                     </button>
                   )}
                   <PrimaryButton

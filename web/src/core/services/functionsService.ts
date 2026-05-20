@@ -67,6 +67,10 @@ export const functionsService = {
     { success: true }
   >('adminUpdateUser'),
 
+  impersonateUser: callable<{ uid: string }, { token: string }>(
+    'impersonateUser',
+  ),
+
   approveTask: callable<{ taskId: string }, { success: true; newBalance: number }>(
     'approveTask',
   ),

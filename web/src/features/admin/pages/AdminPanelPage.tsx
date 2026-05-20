@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../../core/context/AuthContext'
 import { useToast } from '../../../core/context/ToastContext'
+import { authService } from '../../../core/services/authService'
 import { firestoreService } from '../../../core/services/firestoreService'
+import { functionsService } from '../../../core/services/functionsService'
 import { useAllUsers, useAllTasks, useAllStoreItems } from '../hooks/useAdminData'
 import { StarBalanceEditor } from '../components/StarBalanceEditor'
 import { EditUserModal } from '../components/EditUserModal'
@@ -29,6 +31,10 @@ function isOnline(user: UserProfile): boolean {
 interface PendingAction {
   title: string
   message: string
+  /** Label on the confirm button — defaults to "Delete" (the most common use). */
+  confirmLabel?: string
+  /** True for destructive actions (red button); false for benign ones. */
+  danger?: boolean
   run: () => Promise<void>
 }
 
@@ -85,23 +91,38 @@ function ActionButton({ onClick, label }: { onClick: () => void; label: string }
   )
 }
 
-/** The Edit / Star history / Delete button cluster shared by every user row. */
+function JoinButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="shrink-0 rounded-lg bg-secondary/10 px-3 py-1 text-caption font-bold text-secondary hover:bg-secondary/20"
+    >
+      Join account
+    </button>
+  )
+}
+
+/** The Edit / Join / Star history / Delete button cluster on every user row. */
 function UserActions({
   user,
   isSelf,
   onEdit,
+  onJoin,
   onHistory,
   onDelete,
 }: {
   user: UserProfile
   isSelf: boolean
   onEdit: () => void
+  onJoin: () => void
   onHistory: () => void
   onDelete: () => void
 }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <ActionButton onClick={onEdit} label="Edit" />
+      {!isSelf && <JoinButton onClick={onJoin} />}
       {user.role === 'child' && (
         <ActionButton onClick={onHistory} label="⭐ History" />
       )}
@@ -235,6 +256,22 @@ export function AdminPanelPage() {
       title: 'Delete store item?',
       message: `Permanently delete "${name}".`,
       run: () => firestoreService.deleteStoreItem(id),
+    })
+  }
+
+  /** Prompts to sign in as another user via a custom token (admin only). */
+  function askJoin(user: UserProfile): void {
+    setPending({
+      title: `Sign in as ${user.displayName}?`,
+      message:
+        "You'll be signed out of your admin account. To return, log out of the new account and sign in again as admin.",
+      confirmLabel: 'Join',
+      danger: false,
+      run: async () => {
+        const { token } = await functionsService.impersonateUser({ uid: user.id })
+        await authService.signInWithToken(token)
+        // AuthContext picks up the new user; ProtectedRoute redirects to home.
+      },
     })
   }
 
@@ -372,6 +409,7 @@ export function AdminPanelPage() {
                             user={parent}
                             isSelf={parent.id === profile?.id}
                             onEdit={() => setEditUser(parent)}
+                            onJoin={() => askJoin(parent)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(parent.id, parent.displayName)}
                           />
@@ -404,6 +442,7 @@ export function AdminPanelPage() {
                                     user={kid}
                                     isSelf={false}
                                     onEdit={() => setEditUser(kid)}
+                                    onJoin={() => askJoin(kid)}
                                     onHistory={() => setHistoryChild(kid)}
                                     onDelete={() => askDeleteUser(kid.id, kid.displayName)}
                                   />
@@ -438,6 +477,7 @@ export function AdminPanelPage() {
                             user={a}
                             isSelf={a.id === profile?.id}
                             onEdit={() => setEditUser(a)}
+                            onJoin={() => askJoin(a)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(a.id, a.displayName)}
                           />
@@ -465,6 +505,7 @@ export function AdminPanelPage() {
                               user={c}
                               isSelf={false}
                               onEdit={() => setEditUser(c)}
+                              onJoin={() => askJoin(c)}
                               onHistory={() => setHistoryChild(c)}
                               onDelete={() => askDeleteUser(c.id, c.displayName)}
                             />
@@ -589,8 +630,8 @@ export function AdminPanelPage() {
         open={pending !== null}
         title={pending?.title ?? ''}
         message={pending?.message ?? ''}
-        confirmLabel="Delete"
-        danger
+        confirmLabel={pending?.confirmLabel ?? 'Delete'}
+        danger={pending?.danger ?? true}
         loading={busy}
         onConfirm={runPending}
         onCancel={() => setPending(null)}

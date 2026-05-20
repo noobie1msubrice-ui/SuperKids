@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  signInWithCustomToken,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
@@ -152,6 +153,18 @@ export const authService = {
   /** Signs the current user out. */
   async logout(): Promise<void> {
     await signOut(auth);
+  },
+
+  /**
+   * Signs in with a custom token (the admin "Join account" flow). Replaces
+   * the current Auth session — the previously signed-in account is logged out.
+   */
+  async signInWithToken(token: string): Promise<void> {
+    try {
+      await signInWithCustomToken(auth, token);
+    } catch (err) {
+      throw mapAuthError(err);
+    }
   },
 
   /**

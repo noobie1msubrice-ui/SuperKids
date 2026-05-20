@@ -229,8 +229,13 @@ export function AdminPanelPage() {
     try {
       await pending.run()
       showToast('Done.', 'success')
-    } catch {
-      showToast('That action failed.', 'error')
+    } catch (err) {
+      // Surface the real error message — generic "action failed" hid useful
+      // details like IAM / Cloud Function errors during debugging.
+      showToast(
+        (err as Error)?.message || 'That action failed.',
+        'error',
+      )
     } finally {
       setBusy(false)
       setPending(null)

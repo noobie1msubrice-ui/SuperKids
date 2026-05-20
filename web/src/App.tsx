@@ -5,7 +5,6 @@ import { LanguageProvider } from './core/i18n/LanguageContext'
 import { ProtectedRoute } from './core/router/ProtectedRoute'
 import { RootRedirect } from './core/router/RootRedirect'
 import { NotFoundPage } from './core/router/NotFoundPage'
-import { LanguageSelectPage } from './features/auth/pages/LanguageSelectPage'
 import { RoleSelectPage } from './features/auth/pages/RoleSelectPage'
 import { ParentLoginPage } from './features/auth/pages/ParentLoginPage'
 import { ParentSignupPage } from './features/auth/pages/ParentSignupPage'
@@ -36,7 +35,6 @@ export function App() {
         <ToastProvider>
           <Routes>
             <Route path="/" element={<RootRedirect />} />
-            <Route path="/language" element={<LanguageSelectPage />} />
             <Route path="/role-select" element={<RoleSelectPage />} />
             <Route path="/parent/login" element={<ParentLoginPage />} />
             <Route path="/parent/signup" element={<ParentSignupPage />} />

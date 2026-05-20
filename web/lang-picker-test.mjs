@@ -25,8 +25,9 @@ await step('A1. fresh visit lands on /role-select with the popup over it', async
   // Popup is open
   const dialog = a.getByRole('dialog')
   await dialog.waitFor({ timeout: 5000 })
-  await dialog.getByText('Choose your language').waitFor({ timeout: 2000 })
-  await dialog.getByText('Chọn ngôn ngữ của bạn').waitFor({ timeout: 2000 })
+  await dialog
+    .getByText(/Choose your language.*Chọn ngôn ngữ/)
+    .waitFor({ timeout: 2000 })
 })
 
 await step('A2. popup shows both EN and VI buttons', async () => {
@@ -69,7 +70,7 @@ b.on('console', (m) => { if (m.type() === 'error') consoleErrors.push('B:' + m.t
 await step('B1. picking English closes popup, role-select is English', async () => {
   await b.goto(`${BASE}/`, { waitUntil: 'networkidle' })
   await b.getByRole('dialog').waitFor({ timeout: 5000 })
-  await b.getByRole('button', { name: /^EN\s+English$/ }).click()
+  await b.getByRole('button', { name: /^English$/ }).click()
   await b.getByRole('dialog').waitFor({ state: 'detached', timeout: 3000 })
   await b.getByText("Who's using Winkz?").waitFor({ timeout: 3000 })
 })

@@ -85,47 +85,34 @@ export function RoleSelectPage() {
 
       {langOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-textPrimary/40 p-4"
+          className="fixed left-1/2 top-4 z-50 w-full max-w-sm -translate-x-1/2 px-4"
           role="dialog"
-          aria-modal="true"
           aria-labelledby="lang-popup-title"
         >
-          <div className="animate-pop-in w-full max-w-sm rounded-2xl bg-surface p-6 shadow-card">
-            <h2 id="lang-popup-title" className="text-title">
-              Choose your language
-            </h2>
-            <p className="mt-1 text-body text-textMuted">
-              Chọn ngôn ngữ của bạn
+          <div className="animate-pop-in rounded-2xl border-2 border-primary/20 bg-surface p-4 shadow-cardHover">
+            <p
+              id="lang-popup-title"
+              className="mb-3 text-center text-body font-bold"
+            >
+              Choose your language · Chọn ngôn ngữ
             </p>
-
-            <div className="mt-5 flex flex-col gap-3">
+            <div className="flex gap-2">
               <button
                 type="button"
                 autoFocus
                 onClick={() => pickLanguage('en')}
-                className="group flex items-center gap-4 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-bgLight p-5 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-cardHover active:scale-[0.98]"
+                className="flex-1 rounded-xl border-2 border-primary/30 bg-primary/5 px-3 py-2 text-body font-bold text-primary transition-all duration-150 hover:bg-primary/10 active:scale-95"
               >
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-lg font-extrabold text-primary transition-colors group-hover:bg-primary/25">
-                  EN
-                </span>
-                <span className="text-section font-bold">English</span>
+                English
               </button>
-
               <button
                 type="button"
                 onClick={() => pickLanguage('vi')}
-                className="group flex items-center gap-4 rounded-2xl border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 to-bgLight p-5 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-secondary hover:shadow-cardHover active:scale-[0.98]"
+                className="flex-1 rounded-xl border-2 border-secondary/30 bg-secondary/5 px-3 py-2 text-body font-bold text-secondary transition-all duration-150 hover:bg-secondary/10 active:scale-95"
               >
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/15 text-lg font-extrabold text-secondary transition-colors group-hover:bg-secondary/25">
-                  VI
-                </span>
-                <span className="text-section font-bold">Tiếng Việt</span>
+                Tiếng Việt
               </button>
             </div>
-
-            <p className="mt-5 text-center text-caption text-textMuted">
-              You can change this later in Settings · Bạn có thể đổi sau trong Cài đặt
-            </p>
           </div>
         </div>
       )}

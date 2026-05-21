@@ -278,7 +278,10 @@ export function AdminPanelPage() {
           continueUrl: window.location.origin + '/',
         })
         await authService.signInWithLink(email, link)
-        // AuthContext picks up the new user; ProtectedRoute redirects to home.
+        // Hard-reload to '/' so AuthContext starts fresh with the new user
+        // — avoids any race where the old listener briefly reports
+        // permission-denied while sessions are swapping.
+        window.location.assign('/')
       },
     })
   }

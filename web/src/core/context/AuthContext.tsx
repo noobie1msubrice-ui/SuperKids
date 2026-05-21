@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -35,18 +36,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  // Bumps on every auth change so stale profile-listener callbacks (from a
+  // just-unsubscribed previous user) can recognise themselves and bail out
+  // before clobbering state with permission-denied or empty snapshots.
+  const generationRef = useRef(0);
 
   useEffect(() => {
     let unsubProfile: (() => void) | null = null;
 
     const unsubAuth = authService.onAuthChange((user) => {
+      const gen = ++generationRef.current;
       unsubProfile?.();
       unsubProfile = null;
 
       setFirebaseUser(user);
+      setProfile(null);
 
       if (!user) {
-        setProfile(null);
         setLoading(false);
         return;
       }
@@ -55,10 +61,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubProfile = onSnapshot(
         firestoreService.userDocRef(user.uid),
         (snap) => {
+          if (gen !== generationRef.current) return;
           setProfile(snap.exists() ? snap.data() : null);
           setLoading(false);
         },
         () => {
+          if (gen !== generationRef.current) return;
           setProfile(null);
           setLoading(false);
         },

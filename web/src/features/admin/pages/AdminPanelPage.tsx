@@ -14,7 +14,7 @@ import { StatusBadge } from '../../../core/components/StatusBadge'
 import { UserAvatar } from '../../../core/components/UserAvatar'
 import { PrimaryButton } from '../../../core/components/Button'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
-import { AdminIcon, LockIcon } from '../../../core/components/icons'
+import { AdminIcon, CheckIcon, LockIcon } from '../../../core/components/icons'
 import { effectiveStatus } from '../../../core/utils/billing'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { useAdminBroadcast } from '../../../core/hooks/useAdminBroadcast'
@@ -91,7 +91,7 @@ function ActionButton({ onClick, label }: { onClick: () => void; label: string }
   )
 }
 
-/** Small red padlock shown beside the user's name when their billing is locked. */
+/** Small red padlock shown to the RIGHT of the name when billing is locked. */
 function LockBadge({ user }: { user: UserProfile }) {
   if (effectiveStatus(user) !== 'expired') return null
   return (
@@ -99,6 +99,22 @@ function LockBadge({ user }: { user: UserProfile }) {
       className="h-4 w-4 shrink-0 text-danger"
       aria-label="Account locked"
     />
+  )
+}
+
+/** Small green tick shown to the LEFT of the name when admin has comp'd the user. */
+function FreeBadge({ user }: { user: UserProfile }) {
+  // Skip the indicator on admin rows — every admin is implicitly 'free' and
+  // the row would always show the tick, adding clutter.
+  if (user.role === 'admin') return null
+  if (effectiveStatus(user) !== 'free') return null
+  return (
+    <span
+      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15 text-success"
+      aria-label="Free account"
+    >
+      <CheckIcon className="h-3.5 w-3.5" />
+    </span>
   )
 }
 
@@ -390,6 +406,7 @@ export function AdminPanelPage() {
                             <UserAvatar profile={parent} online={isOnline(parent)} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 text-section font-bold text-gray-800">
+                                <FreeBadge user={parent} />
                                 <span className="truncate">{parent.displayName}</span>
                                 <LockBadge user={parent} />
                               </div>
@@ -419,6 +436,7 @@ export function AdminPanelPage() {
                                   <UserAvatar profile={kid} online={isOnline(kid)} />
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-2 font-bold text-gray-700">
+                                      <FreeBadge user={kid} />
                                       <span className="truncate">{kid.displayName}</span>
                                       <LockBadge user={kid} />
                                     </div>
@@ -460,6 +478,7 @@ export function AdminPanelPage() {
                             <UserAvatar profile={a} online={isOnline(a)} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 font-bold text-gray-800">
+                                <FreeBadge user={a} />
                                 <span className="truncate">{a.displayName}</span>
                                 <LockBadge user={a} />
                               </div>
@@ -487,6 +506,7 @@ export function AdminPanelPage() {
                             <UserAvatar profile={c} online={isOnline(c)} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 font-bold text-gray-800">
+                                <FreeBadge user={c} />
                                 <span className="truncate">{c.displayName}</span>
                                 <LockBadge user={c} />
                               </div>

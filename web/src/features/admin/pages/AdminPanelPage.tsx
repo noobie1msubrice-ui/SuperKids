@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../../core/context/AuthContext'
 import { useToast } from '../../../core/context/ToastContext'
-import { authService } from '../../../core/services/authService'
 import { firestoreService } from '../../../core/services/firestoreService'
-import { functionsService } from '../../../core/services/functionsService'
 import { useAllUsers, useAllTasks, useAllStoreItems } from '../hooks/useAdminData'
 import { StarBalanceEditor } from '../components/StarBalanceEditor'
 import { EditUserModal } from '../components/EditUserModal'
@@ -91,38 +89,23 @@ function ActionButton({ onClick, label }: { onClick: () => void; label: string }
   )
 }
 
-function JoinButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="shrink-0 rounded-lg bg-secondary/10 px-3 py-1 text-caption font-bold text-secondary hover:bg-secondary/20"
-    >
-      Join account
-    </button>
-  )
-}
-
-/** The Edit / Join / Star history / Delete button cluster on every user row. */
+/** The Edit / Star history / Delete button cluster on every user row. */
 function UserActions({
   user,
   isSelf,
   onEdit,
-  onJoin,
   onHistory,
   onDelete,
 }: {
   user: UserProfile
   isSelf: boolean
   onEdit: () => void
-  onJoin: () => void
   onHistory: () => void
   onDelete: () => void
 }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <ActionButton onClick={onEdit} label="Edit" />
-      {!isSelf && <JoinButton onClick={onJoin} />}
       {user.role === 'child' && (
         <ActionButton onClick={onHistory} label="⭐ History" />
       )}
@@ -264,27 +247,6 @@ export function AdminPanelPage() {
     })
   }
 
-  /** Prompts to sign in as another user via a custom token (admin only). */
-  function askJoin(user: UserProfile): void {
-    setPending({
-      title: `Sign in as ${user.displayName}?`,
-      message:
-        "You'll be signed out of your admin account. To return, log out of the new account and sign in again as admin.",
-      confirmLabel: 'Join',
-      danger: false,
-      run: async () => {
-        const { email, link } = await functionsService.impersonateUser({
-          uid: user.id,
-          continueUrl: window.location.origin + '/',
-        })
-        await authService.signInWithLink(email, link)
-        // Hard-reload to '/' so AuthContext starts fresh with the new user
-        // — avoids any race where the old listener briefly reports
-        // permission-denied while sessions are swapping.
-        window.location.assign('/')
-      },
-    })
-  }
 
   async function toggleStoreItem(id: string, isActive: boolean): Promise<void> {
     try {
@@ -420,7 +382,6 @@ export function AdminPanelPage() {
                             user={parent}
                             isSelf={parent.id === profile?.id}
                             onEdit={() => setEditUser(parent)}
-                            onJoin={() => askJoin(parent)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(parent.id, parent.displayName)}
                           />
@@ -453,7 +414,6 @@ export function AdminPanelPage() {
                                     user={kid}
                                     isSelf={false}
                                     onEdit={() => setEditUser(kid)}
-                                    onJoin={() => askJoin(kid)}
                                     onHistory={() => setHistoryChild(kid)}
                                     onDelete={() => askDeleteUser(kid.id, kid.displayName)}
                                   />
@@ -488,7 +448,6 @@ export function AdminPanelPage() {
                             user={a}
                             isSelf={a.id === profile?.id}
                             onEdit={() => setEditUser(a)}
-                            onJoin={() => askJoin(a)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(a.id, a.displayName)}
                           />
@@ -516,7 +475,6 @@ export function AdminPanelPage() {
                               user={c}
                               isSelf={false}
                               onEdit={() => setEditUser(c)}
-                              onJoin={() => askJoin(c)}
                               onHistory={() => setHistoryChild(c)}
                               onDelete={() => askDeleteUser(c.id, c.displayName)}
                             />

@@ -2,7 +2,7 @@
 // role-select screen.
 import { chromium } from 'playwright'
 
-const BASE = 'http://localhost:4173'
+const BASE = process.env.BASE || 'http://localhost:4173'
 let pass = 0, fail = 0
 const ok = (n) => { pass++; console.log(`  PASS  ${n}`) }
 const no = (n, e) => { fail++; console.log(`  FAIL  ${n}  ${e ?? ''}`) }

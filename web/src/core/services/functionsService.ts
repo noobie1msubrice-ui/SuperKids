@@ -67,10 +67,6 @@ export const functionsService = {
     { success: true }
   >('adminUpdateUser'),
 
-  impersonateUser: callable<
-    { uid: string; continueUrl: string },
-    { email: string; link: string }
-  >('impersonateUser'),
 
   approveTask: callable<{ taskId: string }, { success: true; newBalance: number }>(
     'approveTask',

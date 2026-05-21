@@ -158,11 +158,20 @@ export const firestoreService = {
     await deleteDoc(doc(db, COLLECTIONS.tasks, taskId));
   },
 
-  /** Child marks an available task done — moves it to `pending_approval`. */
-  async markTaskDone(taskId: string): Promise<void> {
+  /**
+   * Child marks an available task done — moves it to `pending_approval` and
+   * attaches the photo evidence the kid just uploaded. Both fields are
+   * required by the Firestore rule.
+   */
+  async markTaskDone(
+    taskId: string,
+    evidence: { evidenceUrl: string; evidencePath: string },
+  ): Promise<void> {
     await updateDoc(doc(db, COLLECTIONS.tasks, taskId), {
       status: 'pending_approval',
       completedAt: serverTimestamp(),
+      evidenceUrl: evidence.evidenceUrl,
+      evidencePath: evidence.evidencePath,
     });
   },
 

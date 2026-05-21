@@ -44,6 +44,30 @@ export const storageService = {
   },
 
   /**
+   * Uploads the photo a kid attaches when marking a task done. Fixed path
+   * `taskEvidence/{taskId}/evidence` means each new submission overwrites the
+   * previous one (handy if the parent rejects and the kid retries with a
+   * different photo). Returns both the download URL and the storage path so
+   * the latter can be persisted on the task doc for later cleanup.
+   */
+  async uploadTaskEvidence(
+    taskId: string,
+    file: File,
+  ): Promise<{ evidenceUrl: string; evidencePath: string }> {
+    if (!file.type.startsWith('image/')) {
+      throw new AppError('invalid-file', 'Please choose an image file.');
+    }
+    if (file.size >= LIMITS.imageMaxBytes) {
+      throw new AppError('file-too-large', 'That image is too big (max 5 MB).');
+    }
+    const path = `taskEvidence/${taskId}/evidence.${extensionFor(file.type)}`;
+    const fileRef = ref(storage, path);
+    await uploadBytes(fileRef, file, { contentType: file.type });
+    const url = await getDownloadURL(fileRef);
+    return { evidenceUrl: url, evidencePath: path };
+  },
+
+  /**
    * Uploads a profile picture to `avatars/{uid}/avatar` and returns its
    * download URL. The fixed path means each upload overwrites the previous
    * one — no orphan files — and the fresh download token busts any cache.

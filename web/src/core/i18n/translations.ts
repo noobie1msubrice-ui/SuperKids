@@ -114,6 +114,11 @@ const en: Dict = {
   'tasks.toDo': 'To do',
   'tasks.pendingApproval': 'Pending approval',
   'tasks.completed': 'Completed',
+  'tasks.submit': 'Submit',
+  'tasks.evidenceLabel': 'Photo of your work',
+  'tasks.evidenceHint': 'Take a photo to show your parent what you finished.',
+  'tasks.evidenceRequired': 'Please add a photo first.',
+  'tasks.evidenceAlt': "Kid's photo evidence",
 
   'store.title': 'Store',
   'store.starStore': 'Star Store',
@@ -326,6 +331,11 @@ const vi: Dict = {
   'tasks.toDo': 'Cần làm',
   'tasks.pendingApproval': 'Chờ duyệt',
   'tasks.completed': 'Hoàn thành',
+  'tasks.submit': 'Gửi',
+  'tasks.evidenceLabel': 'Ảnh thành quả của bé',
+  'tasks.evidenceHint': 'Chụp ảnh để khoe bố mẹ điều bé đã hoàn thành nhé.',
+  'tasks.evidenceRequired': 'Hãy thêm một ảnh trước nhé.',
+  'tasks.evidenceAlt': 'Ảnh chứng minh của bé',
 
   'store.title': 'Cửa hàng',
   'store.starStore': 'Cửa hàng Sao',

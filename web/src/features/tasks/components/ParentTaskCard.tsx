@@ -44,6 +44,22 @@ export function ParentTaskCard({
         </div>
       </div>
 
+      {isPending && task.evidenceUrl && (
+        <a
+          href={task.evidenceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="mt-3 block overflow-hidden rounded-xl border-2 border-secondary/30"
+        >
+          <img
+            src={task.evidenceUrl}
+            alt={t('tasks.evidenceAlt')}
+            className="max-h-72 w-full object-cover"
+          />
+        </a>
+      )}
+
       {isPending && (
         <div
           className="mt-3 flex gap-3"

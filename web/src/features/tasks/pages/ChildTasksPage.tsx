@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMyTasks, pendingFirst } from '../hooks/useTasks'
-import { firestoreService } from '../../../core/services/firestoreService'
-import { useToast } from '../../../core/context/ToastContext'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { ChildTaskCard } from '../components/ChildTaskCard'
+import { SubmitTaskModal } from '../components/SubmitTaskModal'
 import { PageHeader } from '../../../core/components/PageHeader'
 import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { EmptyState } from '../../../core/components/EmptyState'
 import { RewardCelebration } from '../../../core/components/RewardCelebration'
-import type { TaskStatus } from '../../../models/task'
+import type { Task, TaskStatus } from '../../../models/task'
 
 export function ChildTasksPage() {
-  const { showToast } = useToast()
   const { t } = useTranslation()
   const { data: tasks, loading, error } = useMyTasks()
-  const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
+  // The submit modal owns its own loading state, so the page no longer
+  // tracks a per-task busy flag.
+  const [submitTask, setSubmitTask] = useState<Task | null>(null)
   const [celebration, setCelebration] = useState<string | null>(null)
 
   // Track previous task statuses so we can fire the celebration the moment a
@@ -40,18 +40,6 @@ export function ChildTasksPage() {
     prevStatuses.current = snapshot
   }, [tasks, loading])
 
-  async function handleDone(taskId: string): Promise<void> {
-    setBusyTaskId(taskId)
-    try {
-      await firestoreService.markTaskDone(taskId)
-      showToast(t('tasks.markedDone'), 'success')
-    } catch {
-      showToast(t('common.errorGeneric'), 'error')
-    } finally {
-      setBusyTaskId(null)
-    }
-  }
-
   const sorted = pendingFirst(tasks)
 
   return (
@@ -71,11 +59,15 @@ export function ChildTasksPage() {
             <ChildTaskCard
               key={task.id}
               task={task}
-              onDone={() => handleDone(task.id)}
-              busy={busyTaskId === task.id}
+              onDone={() => setSubmitTask(task)}
+              busy={false}
             />
           ))}
         </div>
+      )}
+
+      {submitTask && (
+        <SubmitTaskModal task={submitTask} onClose={() => setSubmitTask(null)} />
       )}
 
       <RewardCelebration

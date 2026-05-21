@@ -16,6 +16,10 @@ export interface Task {
   createdAt: Timestamp | null;
   completedAt?: Timestamp;
   approvedAt?: Timestamp;
+  /** Download URL of the photo the kid uploaded when marking the task done. */
+  evidenceUrl?: string;
+  /** Storage path of the same photo, used to delete it on task deletion. */
+  evidencePath?: string;
 }
 
 export const taskConverter = idConverter<Task>();

@@ -80,12 +80,16 @@ service cloud.firestore {
       allow update, delete: if isParent()
         && resource.data.parentId == myUid()
         && resource.data.status != 'completed';
-      // Child may only flip an available task to pending_approval.
+      // Child may only flip an available task to pending_approval, and must
+      // attach a photo (evidenceUrl + evidencePath) at the same time.
       allow update: if isChild()
         && resource.data.childId == myUid()
         && resource.data.status == 'available'
         && request.resource.data.status == 'pending_approval'
-        && changedKeys().hasOnly(['status', 'completedAt']);
+        && request.resource.data.evidenceUrl is string
+        && changedKeys().hasOnly([
+          'status', 'completedAt', 'evidenceUrl', 'evidencePath'
+        ]);
       // status -> completed happens ONLY via the approveTask function (Admin bypasses rules).
     }
 

@@ -14,7 +14,8 @@ import { StatusBadge } from '../../../core/components/StatusBadge'
 import { UserAvatar } from '../../../core/components/UserAvatar'
 import { PrimaryButton } from '../../../core/components/Button'
 import { TASK_STATUS } from '../../../core/utils/statusLabels'
-import { AdminIcon } from '../../../core/components/icons'
+import { AdminIcon, LockIcon } from '../../../core/components/icons'
+import { effectiveStatus } from '../../../core/utils/billing'
 import { useTranslation } from '../../../core/i18n/LanguageContext'
 import { useAdminBroadcast } from '../../../core/hooks/useAdminBroadcast'
 import type { UserProfile } from '../../../models/userProfile'
@@ -87,6 +88,17 @@ function ActionButton({ onClick, label }: { onClick: () => void; label: string }
     >
       {label}
     </button>
+  )
+}
+
+/** Small red padlock shown beside the user's name when their billing is locked. */
+function LockBadge({ user }: { user: UserProfile }) {
+  if (effectiveStatus(user) !== 'expired') return null
+  return (
+    <LockIcon
+      className="h-4 w-4 shrink-0 text-danger"
+      aria-label="Account locked"
+    />
   )
 }
 
@@ -377,8 +389,9 @@ export function AdminPanelPage() {
                           <div className="flex min-w-0 items-center gap-3">
                             <UserAvatar profile={parent} online={isOnline(parent)} />
                             <div className="min-w-0">
-                              <div className="text-section font-bold text-gray-800">
-                                {parent.displayName}
+                              <div className="flex items-center gap-2 text-section font-bold text-gray-800">
+                                <span className="truncate">{parent.displayName}</span>
+                                <LockBadge user={parent} />
                               </div>
                               <div className="truncate text-caption text-textMuted">
                                 {parent.email}
@@ -405,8 +418,9 @@ export function AdminPanelPage() {
                                 <div className="flex min-w-0 items-center gap-3">
                                   <UserAvatar profile={kid} online={isOnline(kid)} />
                                   <div className="min-w-0">
-                                    <div className="font-bold text-gray-700">
-                                      {kid.displayName}
+                                    <div className="flex items-center gap-2 font-bold text-gray-700">
+                                      <span className="truncate">{kid.displayName}</span>
+                                      <LockBadge user={kid} />
                                     </div>
                                     <div className="truncate text-caption text-textMuted">
                                       {kid.email}
@@ -445,8 +459,9 @@ export function AdminPanelPage() {
                           <div className="flex min-w-0 items-center gap-3">
                             <UserAvatar profile={a} online={isOnline(a)} />
                             <div className="min-w-0">
-                              <div className="font-bold text-gray-800">
-                                {a.displayName}
+                              <div className="flex items-center gap-2 font-bold text-gray-800">
+                                <span className="truncate">{a.displayName}</span>
+                                <LockBadge user={a} />
                               </div>
                               <div className="truncate text-caption text-textMuted">
                                 {a.email}
@@ -471,8 +486,9 @@ export function AdminPanelPage() {
                           <div className="flex min-w-0 items-center gap-3">
                             <UserAvatar profile={c} online={isOnline(c)} />
                             <div className="min-w-0">
-                              <div className="font-bold text-gray-800">
-                                {c.displayName}
+                              <div className="flex items-center gap-2 font-bold text-gray-800">
+                                <span className="truncate">{c.displayName}</span>
+                                <LockBadge user={c} />
                               </div>
                               <div className="truncate text-caption text-textMuted">
                                 {c.email} · no parent

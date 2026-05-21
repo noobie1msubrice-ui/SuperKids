@@ -9,14 +9,26 @@ import {
   EmailAuthProvider,
   type User,
 } from 'firebase/auth';
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { ADMIN_EMAILS, COLLECTIONS } from '../utils/constants';
+import { isFreeEmail } from '../utils/billing';
 import {
   userProfileConverter,
   type UserProfile,
 } from '../../models/userProfile';
 import { AppError } from './functionsService';
+
+/** Trial-window billing fields applied to a new account at signup. */
+function trialBilling(email: string): {
+  billingStatus: 'free' | 'trial';
+  trialEndsAt?: Timestamp;
+} {
+  if (isFreeEmail(email)) return { billingStatus: 'free' };
+  const ends = new Date();
+  ends.setDate(ends.getDate() + 30);
+  return { billingStatus: 'trial', trialEndsAt: Timestamp.fromDate(ends) };
+}
 
 /** Maps a Firebase Auth error code to a friendly message. */
 function mapAuthError(err: unknown): AppError {
@@ -67,6 +79,7 @@ export const authService = {
         displayName,
         email,
         createdAt: serverTimestamp(),
+        ...trialBilling(email),
       });
     } catch (err) {
       throw mapAuthError(err);
@@ -96,6 +109,7 @@ export const authService = {
         displayName,
         email,
         createdAt: serverTimestamp(),
+        ...trialBilling(email),
       });
     } catch (err) {
       throw mapAuthError(err);
@@ -130,6 +144,7 @@ export const authService = {
         displayName,
         email: normalized,
         createdAt: serverTimestamp(),
+        billingStatus: 'free',
       });
     } catch (err) {
       if (err instanceof AppError) {

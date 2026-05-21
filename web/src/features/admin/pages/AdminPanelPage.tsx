@@ -6,6 +6,7 @@ import { useAllUsers, useAllTasks, useAllStoreItems } from '../hooks/useAdminDat
 import { StarBalanceEditor } from '../components/StarBalanceEditor'
 import { EditUserModal } from '../components/EditUserModal'
 import { StarHistoryModal } from '../components/StarHistoryModal'
+import { BillingModal } from '../components/BillingModal'
 import { LoadingView } from '../../../core/components/LoadingView'
 import { ErrorView } from '../../../core/components/ErrorView'
 import { ConfirmDialog } from '../../../core/components/ConfirmDialog'
@@ -89,23 +90,28 @@ function ActionButton({ onClick, label }: { onClick: () => void; label: string }
   )
 }
 
-/** The Edit / Star history / Delete button cluster on every user row. */
+/** The Edit / Billing / Star history / Delete button cluster on every user row. */
 function UserActions({
   user,
   isSelf,
   onEdit,
+  onBilling,
   onHistory,
   onDelete,
 }: {
   user: UserProfile
   isSelf: boolean
   onEdit: () => void
+  onBilling: () => void
   onHistory: () => void
   onDelete: () => void
 }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       <ActionButton onClick={onEdit} label="Edit" />
+      {user.role !== 'admin' && (
+        <ActionButton onClick={onBilling} label="💳 Billing" />
+      )}
       {user.role === 'child' && (
         <ActionButton onClick={onHistory} label="⭐ History" />
       )}
@@ -127,6 +133,7 @@ export function AdminPanelPage() {
   const [busy, setBusy] = useState(false)
   const [editUser, setEditUser] = useState<UserProfile | null>(null)
   const [historyChild, setHistoryChild] = useState<UserProfile | null>(null)
+  const [billingUser, setBillingUser] = useState<UserProfile | null>(null)
 
   const [userSearch, setUserSearch] = useState('')
   const [taskSearch, setTaskSearch] = useState('')
@@ -382,6 +389,7 @@ export function AdminPanelPage() {
                             user={parent}
                             isSelf={parent.id === profile?.id}
                             onEdit={() => setEditUser(parent)}
+                            onBilling={() => setBillingUser(parent)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(parent.id, parent.displayName)}
                           />
@@ -414,6 +422,7 @@ export function AdminPanelPage() {
                                     user={kid}
                                     isSelf={false}
                                     onEdit={() => setEditUser(kid)}
+                                    onBilling={() => setBillingUser(kid)}
                                     onHistory={() => setHistoryChild(kid)}
                                     onDelete={() => askDeleteUser(kid.id, kid.displayName)}
                                   />
@@ -448,6 +457,7 @@ export function AdminPanelPage() {
                             user={a}
                             isSelf={a.id === profile?.id}
                             onEdit={() => setEditUser(a)}
+                            onBilling={() => setBillingUser(a)}
                             onHistory={() => {}}
                             onDelete={() => askDeleteUser(a.id, a.displayName)}
                           />
@@ -475,6 +485,7 @@ export function AdminPanelPage() {
                               user={c}
                               isSelf={false}
                               onEdit={() => setEditUser(c)}
+                              onBilling={() => setBillingUser(c)}
                               onHistory={() => setHistoryChild(c)}
                               onDelete={() => askDeleteUser(c.id, c.displayName)}
                             />
@@ -614,6 +625,9 @@ export function AdminPanelPage() {
           child={historyChild}
           onClose={() => setHistoryChild(null)}
         />
+      )}
+      {billingUser && (
+        <BillingModal user={billingUser} onClose={() => setBillingUser(null)} />
       )}
     </div>
   )

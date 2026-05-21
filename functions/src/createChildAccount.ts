@@ -8,6 +8,7 @@ import {
   validateEmail,
   validatePassword,
 } from './lib/validation';
+import { defaultBillingFor } from './lib/billing';
 
 interface CreateChildRequest {
   displayName: string;
@@ -49,6 +50,7 @@ export const createChildAccount = onCall<CreateChildRequest>(async (request) => 
       parentId: parentUid,
       starBalance: 0,
       createdAt: FieldValue.serverTimestamp(),
+      ...defaultBillingFor(email),
     });
   } catch (err) {
     logger.error('createChildAccount: profile write failed, rolling back', err);

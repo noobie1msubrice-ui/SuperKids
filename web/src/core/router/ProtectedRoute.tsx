@@ -2,6 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AppLayout } from '../layout/AppLayout';
 import { LoadingView } from '../components/LoadingView';
+import { hasAccess } from '../utils/billing';
 import type { UserProfile, UserRole } from '../../models/userProfile';
 
 /**
@@ -27,6 +28,12 @@ export function ProtectedRoute({ role }: { role: UserRole }) {
   }
   if (!firebaseUser || !profile) {
     return <Navigate to="/role-select" replace />;
+  }
+  // Paywall: signed-in users whose trial has ended (or who are marked
+  // expired) get redirected to /paywall until they pay or admin comps them.
+  // Admins bypass — effectiveStatus() always returns 'free' for them.
+  if (!hasAccess(profile)) {
+    return <Navigate to="/paywall" replace />;
   }
   if (profile.role !== role) {
     return <Navigate to={homePathFor(profile)} replace />;

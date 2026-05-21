@@ -60,6 +60,20 @@ const en: Dict = {
     'As soon as they do, your tasks and Star Store appear right here.',
   'waiting.signOut': 'Sign out',
 
+  'paywall.title': 'Time to subscribe',
+  'paywall.trialEnded': 'Your free trial has ended.',
+  'paywall.notActive': 'Your subscription is not active.',
+  'paywall.locked': 'Your account is locked by an admin.',
+  'paywall.priceLabel': 'Monthly subscription',
+  'paywall.perMonth': 'per month',
+  'paywall.subscribe': 'Subscribe',
+  'paywall.signOut': 'Sign out',
+  'paywall.comingSoon':
+    'Online payment is coming soon. Please contact the admin to unlock your account.',
+  'paywall.howTo': 'How to unlock now',
+  'paywall.howToBody':
+    'Online payment will arrive shortly. In the meantime, message the admin with this email so they can activate your account manually:',
+
   'nav.tasks': 'Tasks',
   'nav.store': 'Store',
   'nav.backpack': 'Backpack',
@@ -257,6 +271,20 @@ const vi: Dict = {
   'waiting.note':
     'Ngay khi bố mẹ thêm, nhiệm vụ và Cửa hàng Sao sẽ hiện ra ở đây.',
   'waiting.signOut': 'Đăng xuất',
+
+  'paywall.title': 'Đã đến lúc đăng ký',
+  'paywall.trialEnded': 'Thời gian dùng thử miễn phí đã kết thúc.',
+  'paywall.notActive': 'Gói đăng ký của bạn chưa được kích hoạt.',
+  'paywall.locked': 'Tài khoản của bạn đã bị quản trị viên khóa.',
+  'paywall.priceLabel': 'Gói hàng tháng',
+  'paywall.perMonth': 'mỗi tháng',
+  'paywall.subscribe': 'Đăng ký',
+  'paywall.signOut': 'Đăng xuất',
+  'paywall.comingSoon':
+    'Tính năng thanh toán trực tuyến sắp ra mắt. Vui lòng liên hệ quản trị viên để mở khóa tài khoản.',
+  'paywall.howTo': 'Mở khóa ngay bây giờ',
+  'paywall.howToBody':
+    'Thanh toán trực tuyến sẽ ra mắt sớm. Trong lúc đó, hãy nhắn quản trị viên kèm email sau để được kích hoạt thủ công:',
 
   'nav.tasks': 'Nhiệm vụ',
   'nav.store': 'Cửa hàng',

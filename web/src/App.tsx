@@ -11,6 +11,7 @@ import { ParentSignupPage } from './features/auth/pages/ParentSignupPage'
 import { ChildLoginPage } from './features/auth/pages/ChildLoginPage'
 import { ChildSignupPage } from './features/auth/pages/ChildSignupPage'
 import { ChildWaitingPage } from './features/auth/pages/ChildWaitingPage'
+import { PaywallPage } from './features/billing/PaywallPage'
 import { ParentTasksPage } from './features/tasks/pages/ParentTasksPage'
 import { AddTaskPage } from './features/tasks/pages/AddTaskPage'
 import { EditTaskPage } from './features/tasks/pages/EditTaskPage'
@@ -41,6 +42,7 @@ export function App() {
             <Route path="/child/login" element={<ChildLoginPage />} />
             <Route path="/child/signup" element={<ChildSignupPage />} />
             <Route path="/child/waiting" element={<ChildWaitingPage />} />
+            <Route path="/paywall" element={<PaywallPage />} />
 
             <Route element={<ProtectedRoute role="parent" />}>
               <Route path="/parent/tasks" element={<ParentTasksPage />} />

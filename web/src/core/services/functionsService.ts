@@ -67,6 +67,16 @@ export const functionsService = {
     { success: true }
   >('adminUpdateUser'),
 
+  adminSetBilling: callable<
+    {
+      uid: string
+      billingStatus?: 'free' | 'trial' | 'paid' | 'expired'
+      resetTrialDays?: number
+      priceVnd?: number | null
+    },
+    { success: true }
+  >('adminSetBilling'),
+
 
   approveTask: callable<{ taskId: string }, { success: true; newBalance: number }>(
     'approveTask',

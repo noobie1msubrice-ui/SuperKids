@@ -175,6 +175,8 @@ const en: Dict = {
   'family.kidSignupEmail': "Kid's sign-up email",
   'family.kidLinked': 'Kid linked!',
   'family.kidLinkedMsg': '{name} is now part of your family.',
+  'family.pendingRedemptions': 'Waiting for you',
+  'family.redeemHint': 'Give the kid the real reward, then tap to confirm.',
 
   'profile.parentTitle': 'Profile',
   'profile.childTitle': 'My Profile',
@@ -371,6 +373,8 @@ const vi: Dict = {
   'family.kidSignupEmail': 'Email đăng ký của bé',
   'family.kidLinked': 'Đã liên kết bé!',
   'family.kidLinkedMsg': '{name} giờ đã thuộc gia đình của bạn.',
+  'family.pendingRedemptions': 'Đang chờ bạn',
+  'family.redeemHint': 'Đưa quà cho bé, rồi nhấn để xác nhận.',
 
   'profile.parentTitle': 'Hồ sơ',
   'profile.childTitle': 'Hồ sơ của tôi',

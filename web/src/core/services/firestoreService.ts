@@ -104,6 +104,20 @@ export const firestoreService = {
     );
   },
 
+  /**
+   * All of a parent's children's backpack items that are awaiting redemption
+   * — drives the "Waiting for you" panel on the Family page. Two equality
+   * filters need no composite index (Firestore handles this with the default
+   * single-field indexes); client sorts by request time.
+   */
+  parentPendingRedemptionsQuery(parentId: string): Query<BackpackItem> {
+    return query(
+      backpackCol,
+      where('parentId', '==', parentId),
+      where('status', '==', 'redeem_requested'),
+    );
+  },
+
   /** A child's Star ledger, newest first. */
   childTransactionsQuery(childId: string): Query<Transaction> {
     return query(

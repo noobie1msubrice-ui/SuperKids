@@ -21,25 +21,58 @@ export function RoleSelectPage() {
   // once they pick, the choice is saved and the popup never reappears.
   const [langOpen, setLangOpen] = useState(() => !hasPickedLanguage());
 
-  // Hidden entry point: typing "admin" anywhere on this screen opens the
-  // Admin login / sign-up dialog — or, when an admin is already signed in,
-  // jumps straight to the Admin panel with no re-login.
+  // Hidden entry points to the Admin dialog (or straight into the panel if
+  // already signed in as admin): typing "admin" anywhere, OR tapping the
+  // background five times in 1.5 seconds — both feel "secret" but the tap
+  // works on touch devices where no keyboard is available.
   useEffect(() => {
     let buffer = '';
+    let taps = 0;
+    let tapTimer: number | undefined;
+
+    function trigger(): void {
+      if (profile?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        setAdminOpen(true);
+      }
+    }
+
     function onKey(e: KeyboardEvent): void {
       if (e.key.length !== 1) return;
       buffer = (buffer + e.key).toLowerCase().slice(-5);
       if (buffer === 'admin') {
         buffer = '';
-        if (profile?.role === 'admin') {
-          navigate('/admin');
-        } else {
-          setAdminOpen(true);
-        }
+        trigger();
       }
     }
+
+    function onTap(e: PointerEvent): void {
+      // Don't count taps that hit an actual interactive element (role
+      // buttons, the back button, etc.) — those have their own behaviour and
+      // tapping them five times shouldn't sneak into the admin panel.
+      const target = e.target as Element | null;
+      if (target?.closest('button, a, input, textarea, select, [role="dialog"]')) {
+        return;
+      }
+      taps += 1;
+      window.clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(() => {
+        taps = 0;
+      }, 1500);
+      if (taps >= 5) {
+        taps = 0;
+        trigger();
+      }
+    }
+
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onTap);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onTap);
+      window.clearTimeout(tapTimer);
+    };
   }, [profile, navigate]);
 
   function pickLanguage(lang: Lang): void {

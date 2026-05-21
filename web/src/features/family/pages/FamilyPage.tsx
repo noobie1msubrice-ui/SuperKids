@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useChildren } from '../hooks/useChildren';
 import { ChildCard } from '../components/ChildCard';
+import { PendingRedemptions } from '../components/PendingRedemptions';
 import { useTranslation } from '../../../core/i18n/LanguageContext';
 import { PageHeader } from '../../../core/components/PageHeader';
 import { PrimaryButton, SecondaryButton } from '../../../core/components/Button';
@@ -27,6 +28,8 @@ export function FamilyPage() {
           </PrimaryButton>
         }
       />
+
+      <PendingRedemptions />
 
       <SecondaryButton
         fullWidth

@@ -54,7 +54,12 @@ export const functionsService = {
   >('linkChildToParent'),
 
   updateChildCredentials: callable<
-    { childUid: string; displayName?: string; newPassword?: string },
+    {
+      childUid: string;
+      displayName?: string;
+      newPassword?: string;
+      newEmail?: string;
+    },
     { success: true }
   >('updateChildCredentials'),
 

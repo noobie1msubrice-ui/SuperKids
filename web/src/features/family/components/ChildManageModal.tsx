@@ -19,6 +19,7 @@ interface ChildManageModalProps {
 
 interface ManageForm {
   displayName: string;
+  email: string;
   newPassword: string;
 }
 
@@ -40,20 +41,32 @@ export function ChildManageModal({
     reset,
     formState: { errors },
   } = useForm<ManageForm>({
-    defaultValues: { displayName: child.displayName, newPassword: '' },
+    defaultValues: {
+      displayName: child.displayName,
+      email: child.email ?? '',
+      newPassword: '',
+    },
   });
   const { run, pending, error } = useAction(
     functionsService.updateChildCredentials,
   );
 
   async function onSubmit(data: ManageForm): Promise<void> {
+    const trimmedEmail = data.email.trim().toLowerCase();
+    const emailChanged =
+      trimmedEmail !== '' && trimmedEmail !== (child.email ?? '').toLowerCase();
     const result = await run({
       childUid: child.id,
       displayName: data.displayName.trim(),
+      newEmail: emailChanged ? trimmedEmail : undefined,
       newPassword: data.newPassword ? data.newPassword : undefined,
     });
     if (result) {
-      reset({ displayName: data.displayName, newPassword: '' });
+      reset({
+        displayName: data.displayName,
+        email: trimmedEmail,
+        newPassword: '',
+      });
       onSaved();
     }
   }
@@ -74,6 +87,13 @@ export function ChildManageModal({
           label={t('settings.displayName')}
           error={errors.displayName?.message}
           {...register('displayName', rules.displayName)}
+        />
+        <TextField
+          label={t('auth.email')}
+          type="email"
+          autoComplete="email"
+          error={errors.email?.message}
+          {...register('email', rules.email)}
         />
         <TextField
           label={t('family.newPassword')}

@@ -10,6 +10,7 @@ import { Card } from '../../core/components/Card'
 import { PrimaryButton } from '../../core/components/Button'
 import { FormError } from '../../core/components/FormError'
 import { LoadingView } from '../../core/components/LoadingView'
+import { ConfirmDialog } from '../../core/components/ConfirmDialog'
 
 /** Parent's Rules tab — write rules, send to kids, see acceptance progress. */
 export function ParentRulesPage() {
@@ -22,6 +23,7 @@ export function ParentRulesPage() {
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   if (loading) return <LoadingView />
 
@@ -33,6 +35,15 @@ export function ParentRulesPage() {
     ruleset?.expiresAt
       ? Math.max(0, Math.ceil((ruleset.expiresAt.toMillis() - now) / 86_400_000))
       : 0
+
+  function requestSend(): void {
+    if (!draft.trim()) {
+      setError(t('rules.empty'))
+      return
+    }
+    setError(null)
+    setConfirmOpen(true)
+  }
 
   async function send(): Promise<void> {
     const text = draft.trim()
@@ -46,6 +57,7 @@ export function ParentRulesPage() {
       await functionsService.sendRules({ text })
       showToast(t('rules.sent'), 'success')
       setDraft('')
+      setConfirmOpen(false)
     } catch (err) {
       setError((err as Error).message || t('common.errorGeneric'))
     } finally {
@@ -123,7 +135,7 @@ export function ParentRulesPage() {
             className="mt-1 w-full rounded-xl border-2 border-textMuted/30 px-3 py-2 text-body focus:border-primary focus:outline-none"
           />
           <PrimaryButton
-            onClick={send}
+            onClick={requestSend}
             loading={busy}
             disabled={!draft.trim() || children.length === 0}
             className="mt-3 min-h-[44px] self-start px-5"
@@ -137,6 +149,17 @@ export function ParentRulesPage() {
           )}
         </Card>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t('rules.confirmTitle')}
+        message={t('rules.confirmBody')}
+        confirmLabel={t('rules.confirmYes')}
+        cancelLabel={t('common.cancel')}
+        loading={busy}
+        onConfirm={send}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   )
 }

@@ -9,6 +9,8 @@ interface RoleLogin {
   submit: (email: string, password: string) => Promise<void>;
   pending: boolean;
   error: string | null;
+  /** Count of consecutive failed attempts — drives the recovery prompt. */
+  failedAttempts: number;
 }
 
 /**
@@ -20,6 +22,7 @@ export function useRoleLogin(expectedRole: UserRole): RoleLogin {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
   async function submit(email: string, password: string): Promise<void> {
     setPending(true);
@@ -37,15 +40,18 @@ export function useRoleLogin(expectedRole: UserRole): RoleLogin {
               ? 'That account is not an admin account.'
               : 'That account is not a parent account.';
         setError(wrongRoleMessage);
+        setFailedAttempts((n) => n + 1);
         return;
       }
+      setFailedAttempts(0);
       navigate(homePathFor(profile), { replace: true });
     } catch (err) {
       setError((err as Error).message || COPY.genericError);
+      setFailedAttempts((n) => n + 1);
     } finally {
       setPending(false);
     }
   }
 
-  return { submit, pending, error };
+  return { submit, pending, error, failedAttempts };
 }

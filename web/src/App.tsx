@@ -10,6 +10,7 @@ import { ParentLoginPage } from './features/auth/pages/ParentLoginPage'
 import { ParentSignupPage } from './features/auth/pages/ParentSignupPage'
 import { ChildLoginPage } from './features/auth/pages/ChildLoginPage'
 import { ChildSignupPage } from './features/auth/pages/ChildSignupPage'
+import { RecoverPasswordPage } from './features/auth/pages/RecoverPasswordPage'
 import { ChildWaitingPage } from './features/auth/pages/ChildWaitingPage'
 import { PaywallPage } from './features/billing/PaywallPage'
 import { ParentRulesPage } from './features/rules/ParentRulesPage'
@@ -43,6 +44,7 @@ export function App() {
             <Route path="/parent/signup" element={<ParentSignupPage />} />
             <Route path="/child/login" element={<ChildLoginPage />} />
             <Route path="/child/signup" element={<ChildSignupPage />} />
+            <Route path="/recover" element={<RecoverPasswordPage />} />
             <Route path="/child/waiting" element={<ChildWaitingPage />} />
             <Route path="/paywall" element={<PaywallPage />} />
 

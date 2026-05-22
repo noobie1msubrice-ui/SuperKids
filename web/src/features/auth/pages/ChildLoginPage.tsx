@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthScreen } from '../components/AuthScreen';
@@ -5,6 +6,7 @@ import { useRoleLogin } from '../hooks/useRoleLogin';
 import { TextField } from '../../../core/components/TextField';
 import { PrimaryButton } from '../../../core/components/Button';
 import { FormError } from '../../../core/components/FormError';
+import { ConfirmDialog } from '../../../core/components/ConfirmDialog';
 import { useTranslation } from '../../../core/i18n/LanguageContext';
 
 interface LoginForm {
@@ -19,49 +21,73 @@ export function ChildLoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginForm>();
-  const { submit, pending, error } = useRoleLogin('child');
+  const { submit, pending, error, failedAttempts } = useRoleLogin('child');
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [recoverOpen, setRecoverOpen] = useState(false);
+
+  useEffect(() => {
+    if (failedAttempts >= 3) setRecoverOpen(true);
+  }, [failedAttempts]);
 
   return (
-    <AuthScreen
-      title={t('auth.kidLogIn')}
-      subtitle={t('auth.kidLoginSubtitle')}
-      onBack={() => navigate('/role-select')}
-      backLabel={t('auth.back')}
-      footer={
-        <span className="text-textMuted">
-          {t('auth.newHere')}{' '}
-          <Link to="/child/signup" className="font-bold text-primary underline">
-            {t('auth.createAnAccount')}
-          </Link>
-        </span>
-      }
-    >
-      <form
-        onSubmit={handleSubmit((d) => submit(d.email, d.password))}
-        className="flex flex-col gap-4"
-        noValidate
+    <>
+      <AuthScreen
+        title={t('auth.kidLogIn')}
+        subtitle={t('auth.kidLoginSubtitle')}
+        onBack={() => navigate('/role-select')}
+        backLabel={t('auth.back')}
+        footer={
+          <span className="text-textMuted">
+            {t('auth.newHere')}{' '}
+            <Link to="/child/signup" className="font-bold text-primary underline">
+              {t('auth.createAnAccount')}
+            </Link>
+          </span>
+        }
       >
-        <FormError message={error} />
-        <TextField
-          label={t('auth.email')}
-          type="email"
-          autoComplete="email"
-          error={errors.email?.message}
-          {...register('email', { required: t('auth.enterEmail') })}
-        />
-        <TextField
-          label={t('auth.password')}
-          type="password"
-          autoComplete="current-password"
-          error={errors.password?.message}
-          {...register('password', { required: t('auth.enterPassword') })}
-        />
-        <PrimaryButton type="submit" fullWidth loading={pending}>
-          {t('auth.letsGo')}
-        </PrimaryButton>
-      </form>
-    </AuthScreen>
+        <form
+          onSubmit={handleSubmit((d) => submit(d.email, d.password))}
+          className="flex flex-col gap-4"
+          noValidate
+        >
+          <FormError message={error} />
+          <TextField
+            label={t('auth.email')}
+            type="email"
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register('email', { required: t('auth.enterEmail') })}
+          />
+          <TextField
+            label={t('auth.password')}
+            type="password"
+            autoComplete="current-password"
+            error={errors.password?.message}
+            {...register('password', { required: t('auth.enterPassword') })}
+          />
+          <PrimaryButton type="submit" fullWidth loading={pending}>
+            {t('auth.letsGo')}
+          </PrimaryButton>
+          <button
+            type="button"
+            onClick={() => navigate('/recover')}
+            className="self-center text-caption font-semibold text-primary underline"
+          >
+            {t('auth.forgotPassword')}
+          </button>
+        </form>
+      </AuthScreen>
+
+      <ConfirmDialog
+        open={recoverOpen}
+        title={t('login.tooManyTitle')}
+        message={t('login.tooManyBody')}
+        confirmLabel={t('common.yes')}
+        cancelLabel={t('common.no')}
+        onConfirm={() => navigate('/recover')}
+        onCancel={() => setRecoverOpen(false)}
+      />
+    </>
   );
 }

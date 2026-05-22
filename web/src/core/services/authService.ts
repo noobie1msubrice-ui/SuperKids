@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut,
   onAuthStateChanged,
   updateProfile,
@@ -167,6 +168,15 @@ export const authService = {
   /** Signs the current user out. */
   async logout(): Promise<void> {
     await signOut(auth);
+  },
+
+  /** Sends a password-reset email (Firebase-hosted reset link). */
+  async sendPasswordReset(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+    } catch (err) {
+      throw mapAuthError(err);
+    }
   },
 
   /**

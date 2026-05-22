@@ -23,6 +23,8 @@ const en: Dict = {
   'common.loading': 'Loading…',
   'common.errorGeneric': 'Something went wrong. Please try again.',
   'common.retry': 'Try again',
+  'common.yes': 'Yes',
+  'common.no': 'Not now',
 
   'role.title': "Who's using Winkz?",
   'role.parent': "I'm a Parent",
@@ -52,6 +54,21 @@ const en: Dict = {
   'auth.enterEmail': 'Please enter your email.',
   'auth.kidSignUp': 'Kid Sign Up',
   'auth.kidSignupSubtitle': 'Make your account, then ask a parent to add you.',
+  'auth.forgotPassword': 'Forgot your password?',
+
+  'login.tooManyTitle': 'Trouble signing in?',
+  'login.tooManyBody': 'Would you like to recover your password?',
+
+  'recover.title': 'Reset password',
+  'recover.intro':
+    "Enter your email and we'll send you a link to set a new password.",
+  'recover.sendLink': 'Send reset link',
+  'recover.sentBody':
+    'If an account uses {email}, a reset link is on its way. Open it to choose a new password.',
+  'recover.backToLogin': 'Back to login',
+  'recover.kidNote':
+    'Kids: ask your parent to reset your password from the Family page.',
+  'recover.badEmail': 'Please enter a valid email.',
 
   'waiting.title': "You're almost in!",
   'waiting.message':
@@ -270,6 +287,8 @@ const vi: Dict = {
   'common.loading': 'Đang tải…',
   'common.errorGeneric': 'Đã xảy ra lỗi. Vui lòng thử lại.',
   'common.retry': 'Thử lại',
+  'common.yes': 'Có',
+  'common.no': 'Để sau',
 
   'role.title': 'Ai đang dùng Winkz?',
   'role.parent': 'Tôi là Phụ huynh',
@@ -299,6 +318,21 @@ const vi: Dict = {
   'auth.enterEmail': 'Vui lòng nhập email của bạn.',
   'auth.kidSignUp': 'Đăng ký Trẻ em',
   'auth.kidSignupSubtitle': 'Tạo tài khoản của bé, rồi nhờ bố mẹ thêm bé vào.',
+  'auth.forgotPassword': 'Quên mật khẩu?',
+
+  'login.tooManyTitle': 'Gặp khó khi đăng nhập?',
+  'login.tooManyBody': 'Bạn có muốn khôi phục mật khẩu không?',
+
+  'recover.title': 'Đặt lại mật khẩu',
+  'recover.intro':
+    'Nhập email của bạn, chúng tôi sẽ gửi liên kết để đặt mật khẩu mới.',
+  'recover.sendLink': 'Gửi liên kết đặt lại',
+  'recover.sentBody':
+    'Nếu có tài khoản dùng {email}, một liên kết đặt lại đang được gửi đến. Hãy mở để chọn mật khẩu mới.',
+  'recover.backToLogin': 'Quay lại đăng nhập',
+  'recover.kidNote':
+    'Các bé: hãy nhờ bố mẹ đặt lại mật khẩu trong mục Gia đình.',
+  'recover.badEmail': 'Vui lòng nhập email hợp lệ.',
 
   'waiting.title': 'Sắp xong rồi!',
   'waiting.message':

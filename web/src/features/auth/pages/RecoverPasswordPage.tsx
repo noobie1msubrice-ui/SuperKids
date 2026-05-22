@@ -217,6 +217,9 @@ export function RecoverPasswordPage() {
           <p className="text-center text-body">
             {t('recover.sentBody', { email })}
           </p>
+          <p className="text-center text-caption text-textMuted">
+            {t('recover.spamNote')}
+          </p>
           <PrimaryButton fullWidth onClick={() => navigate('/role-select')}>
             {t('recover.backToLogin')}
           </PrimaryButton>

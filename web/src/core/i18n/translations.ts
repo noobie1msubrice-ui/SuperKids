@@ -85,6 +85,8 @@ const en: Dict = {
   'recover.doneTitle': 'All done!',
   'recover.doneBody': 'Your password has been changed. You can log in with it now.',
   'recover.goLogin': 'Go to login',
+  'recover.spamNote':
+    "If you don't see the email, try looking in your spam or trash folder.",
 
   'waiting.title': "You're almost in!",
   'waiting.message':
@@ -368,6 +370,8 @@ const vi: Dict = {
   'recover.doneTitle': 'Hoàn tất!',
   'recover.doneBody': 'Mật khẩu của bạn đã được thay đổi. Bây giờ bạn có thể đăng nhập.',
   'recover.goLogin': 'Đến trang đăng nhập',
+  'recover.spamNote':
+    'Nếu bạn không thấy email, hãy thử tìm trong mục thư rác hoặc thùng rác.',
 
   'waiting.title': 'Sắp xong rồi!',
   'waiting.message':

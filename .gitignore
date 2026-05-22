@@ -36,3 +36,7 @@ ui-test-result.png
 
 # Local Netlify folder
 .netlify
+
+# Playwright test screenshots
+web/polish-*.png
+web/*-test-result.png

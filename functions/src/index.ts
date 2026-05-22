@@ -11,6 +11,8 @@ export { createChildAccount } from './createChildAccount';
 export { linkChildToParent } from './linkChildToParent';
 export { adminUpdateUser } from './adminUpdateUser';
 export { adminSetBilling } from './adminSetBilling';
+export { sendRules } from './sendRules';
+export { respondToRule } from './respondToRule';
 export { updateChildCredentials } from './updateChildCredentials';
 export { deleteChildAccount } from './deleteChildAccount';
 export { approveTask } from './approveTask';

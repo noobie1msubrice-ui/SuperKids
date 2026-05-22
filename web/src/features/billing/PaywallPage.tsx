@@ -65,6 +65,11 @@ export function PaywallPage() {
           <p className="text-caption text-textMuted">
             {t('paywall.perMonth')}
           </p>
+          {profile.priceMessage && (
+            <p className="mt-3 whitespace-pre-wrap rounded-xl bg-surface px-3 py-2 text-body font-semibold text-secondary">
+              💬 {profile.priceMessage}
+            </p>
+          )}
         </div>
 
         <div className="rounded-xl bg-bgLight px-4 py-3 text-caption text-textMuted">

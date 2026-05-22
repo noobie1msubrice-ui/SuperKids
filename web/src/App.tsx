@@ -12,6 +12,8 @@ import { ChildLoginPage } from './features/auth/pages/ChildLoginPage'
 import { ChildSignupPage } from './features/auth/pages/ChildSignupPage'
 import { ChildWaitingPage } from './features/auth/pages/ChildWaitingPage'
 import { PaywallPage } from './features/billing/PaywallPage'
+import { ParentRulesPage } from './features/rules/ParentRulesPage'
+import { ChildRulesPage } from './features/rules/ChildRulesPage'
 import { ParentTasksPage } from './features/tasks/pages/ParentTasksPage'
 import { AddTaskPage } from './features/tasks/pages/AddTaskPage'
 import { EditTaskPage } from './features/tasks/pages/EditTaskPage'
@@ -56,6 +58,7 @@ export function App() {
               <Route path="/parent/family/link" element={<LinkChildPage />} />
               <Route path="/parent/family/:childId" element={<ChildDetailPage />} />
               <Route path="/parent/profile" element={<ParentProfilePage />} />
+              <Route path="/parent/rules" element={<ParentRulesPage />} />
             </Route>
 
             <Route element={<ProtectedRoute role="child" />}>
@@ -63,6 +66,7 @@ export function App() {
               <Route path="/child/store" element={<ChildStorePage />} />
               <Route path="/child/backpack" element={<BackpackPage />} />
               <Route path="/child/profile" element={<ChildProfilePage />} />
+              <Route path="/child/rules" element={<ChildRulesPage />} />
             </Route>
 
             <Route element={<ProtectedRoute role="admin" />}>

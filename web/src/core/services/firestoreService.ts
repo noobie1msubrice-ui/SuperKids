@@ -24,6 +24,7 @@ import {
   transactionConverter,
   type Transaction,
 } from '../../models/transaction';
+import { rulesetConverter } from '../../models/ruleset';
 
 const usersCol = collection(db, COLLECTIONS.users).withConverter(
   userProfileConverter,
@@ -49,6 +50,11 @@ export const firestoreService = {
   /** The converted reference to a user's own profile document. */
   userDocRef(uid: string) {
     return doc(db, COLLECTIONS.users, uid).withConverter(userProfileConverter);
+  },
+
+  /** Reference to a family's single Ruleset doc (keyed by parent UID). */
+  rulesetDocRef(parentUid: string) {
+    return doc(db, 'rulesets', parentUid).withConverter(rulesetConverter);
   },
 
   // ---------- queries (read, real-time) ----------

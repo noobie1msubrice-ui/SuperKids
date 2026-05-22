@@ -73,9 +73,17 @@ export const functionsService = {
       billingStatus?: 'free' | 'trial' | 'paid' | 'expired'
       resetTrialDays?: number
       priceVnd?: number | null
+      priceMessage?: string | null
     },
     { success: true }
   >('adminSetBilling'),
+
+  sendRules: callable<{ text: string }, { success: true }>('sendRules'),
+
+  respondToRule: callable<
+    { accept: boolean },
+    { success: true; status: 'pending' | 'active' | 'denied' }
+  >('respondToRule'),
 
 
   approveTask: callable<{ taskId: string }, { success: true; newBalance: number }>(

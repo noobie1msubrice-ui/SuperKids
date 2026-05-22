@@ -130,6 +130,19 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- rulesets (parent-authored, family-visible) ----------
+    // One doc per family at /rulesets/{parentUid}. Reads allowed for the
+    // parent themselves, their children, and admins. Writes happen only
+    // via the sendRules / respondToRule Cloud Functions (admin bypasses).
+    match /rulesets/{parentUid} {
+      allow read: if isAdmin();
+      allow read: if isSignedIn() && (
+        parentUid == myUid() ||
+        userDoc(myUid()).get('parentId', '') == parentUid
+      );
+      allow write: if isAdmin();
+    }
+
     // ---------- meta (admin-authored, read by everyone signed-in) ----------
     // Holds the single `adminMessage` doc that drives the global broadcast
     // banner. Admins write; any signed-in user reads.

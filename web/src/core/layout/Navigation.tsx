@@ -9,6 +9,7 @@ import {
   BackpackIcon,
   FamilyIcon,
   ProfileIcon,
+  RulesIcon,
 } from '../components/icons';
 
 interface NavItem {
@@ -21,6 +22,7 @@ const PARENT_NAV: NavItem[] = [
   { to: '/parent/tasks', labelKey: 'nav.tasks', Icon: TasksIcon },
   { to: '/parent/store', labelKey: 'nav.store', Icon: StoreIcon },
   { to: '/parent/family', labelKey: 'nav.family', Icon: FamilyIcon },
+  { to: '/parent/rules', labelKey: 'nav.rules', Icon: RulesIcon },
   { to: '/parent/profile', labelKey: 'nav.profile', Icon: ProfileIcon },
 ];
 
@@ -28,6 +30,7 @@ const CHILD_NAV: NavItem[] = [
   { to: '/child/tasks', labelKey: 'nav.tasks', Icon: TasksIcon },
   { to: '/child/store', labelKey: 'nav.store', Icon: StoreIcon },
   { to: '/child/backpack', labelKey: 'nav.backpack', Icon: BackpackIcon },
+  { to: '/child/rules', labelKey: 'nav.rules', Icon: RulesIcon },
   { to: '/child/profile', labelKey: 'nav.profile', Icon: ProfileIcon },
 ];
 

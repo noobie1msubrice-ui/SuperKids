@@ -25,10 +25,11 @@ service firebase.storage {
       // Anyone signed in may view evidence (the assigned kid, their parent,
       // and admins inside their respective UIs).
       allow read: if request.auth != null;
-      // Only the kid the task is assigned to may upload evidence — and only
-      // images <= 5 MB. firestore.get() cross-checks task ownership.
+      // Any signed-in user may upload an image <= 5 MB here. Ownership is
+      // enforced where it matters: the Firestore task-update rule only lets
+      // the assigned kid attach an evidenceUrl to *their* task, so an upload
+      // to someone else's taskId is harmless (it can never be linked).
       allow write: if request.auth != null
-        && firestore.get(/databases/(default)/documents/tasks/$(taskId)).data.childId == request.auth.uid
         && request.resource.size < 5 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
     }

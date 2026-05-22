@@ -35,6 +35,7 @@ export function BillingModal({ user, onClose }: BillingModalProps) {
   const [priceInput, setPriceInput] = useState(
     user.priceVnd != null ? String(user.priceVnd) : '',
   )
+  const [messageInput, setMessageInput] = useState(user.priceMessage ?? '')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -59,17 +60,21 @@ export function BillingModal({ user, onClose }: BillingModalProps) {
 
   async function savePrice(): Promise<void> {
     const raw = priceInput.trim()
-    if (raw === '') {
-      // Clear the override
-      await run('Custom price cleared', { uid: user.id, priceVnd: null })
-      return
-    }
-    const n = Number(raw.replace(/[^0-9]/g, ''))
-    if (!Number.isFinite(n) || n <= 0) {
+    const message = messageInput.trim()
+    const priceVnd =
+      raw === ''
+        ? null
+        : Number(raw.replace(/[^0-9]/g, ''))
+    if (raw !== '' && (!Number.isFinite(priceVnd) || (priceVnd ?? 0) <= 0)) {
       setError('Price must be a positive number of đồng.')
       return
     }
-    await run('Price', { uid: user.id, priceVnd: n })
+    await run('Price', {
+      uid: user.id,
+      priceVnd,
+      // Empty message clears the override.
+      priceMessage: message === '' ? null : message,
+    })
   }
 
   return (
@@ -136,7 +141,7 @@ export function BillingModal({ user, onClose }: BillingModalProps) {
           </DangerButton>
         </div>
 
-        {/* Custom price */}
+        {/* Custom price + optional message */}
         <div className="border-t border-gray-100 pt-4">
           <TextField
             label="Custom price (VND)"
@@ -145,13 +150,27 @@ export function BillingModal({ user, onClose }: BillingModalProps) {
             onChange={(e) => setPriceInput(e.target.value)}
             hint="Override the default price for this user only."
           />
+          <label className="mt-3 flex flex-col gap-1 text-body font-semibold">
+            Custom message (optional)
+            <textarea
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              placeholder="e.g. Special discount for being an early supporter!"
+              rows={2}
+              maxLength={500}
+              className="rounded-xl border-2 border-textMuted/30 px-3 py-2 text-body focus:border-primary focus:outline-none"
+            />
+            <span className="text-caption font-normal text-textMuted">
+              Shown next to the price on this user's paywall.
+            </span>
+          </label>
           <PrimaryButton
             type="button"
             onClick={savePrice}
             loading={busy}
-            className="mt-2 min-h-[44px] self-start px-5"
+            className="mt-3 min-h-[44px] self-start px-5"
           >
-            Save price
+            Save price &amp; message
           </PrimaryButton>
         </div>
 

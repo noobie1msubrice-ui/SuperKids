@@ -18,6 +18,8 @@ interface SetBillingRequest {
    * fall back to the default price.
    */
   priceVnd?: number | null;
+  /** Optional note shown next to the price on this user's paywall. */
+  priceMessage?: string | null;
 }
 
 /**
@@ -52,6 +54,17 @@ export const adminSetBilling = onCall<SetBillingRequest>(async (request) => {
     request.data.priceVnd > 0
   ) {
     update.priceVnd = Math.round(request.data.priceVnd);
+  }
+
+  if (request.data.priceMessage === null) {
+    update.priceMessage = FieldValue.delete();
+  } else if (typeof request.data.priceMessage === 'string') {
+    const trimmed = request.data.priceMessage.trim().slice(0, 500);
+    if (trimmed.length === 0) {
+      update.priceMessage = FieldValue.delete();
+    } else {
+      update.priceMessage = trimmed;
+    }
   }
 
   // If admin sets status=free, the trial/sub end dates become irrelevant.

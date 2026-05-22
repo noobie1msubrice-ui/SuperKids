@@ -32,6 +32,8 @@ export interface UserProfile {
   subscriptionEndsAt?: Timestamp;
   /** Per-user price override (VND). When unset, the default price is used. */
   priceVnd?: number;
+  /** Optional message shown next to the price on this user's paywall. */
+  priceMessage?: string;
 }
 
 export const userProfileConverter = idConverter<UserProfile>();

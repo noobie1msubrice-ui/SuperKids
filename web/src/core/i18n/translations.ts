@@ -70,6 +70,21 @@ const en: Dict = {
   'recover.kidNote':
     'Kids: ask your parent to reset your password from the Family page.',
   'recover.badEmail': 'Please enter a valid email.',
+  'recover.rememberIntro':
+    'If you still remember a password you used, type it here and set a new one right away.',
+  'recover.oldPasswordLabel': 'Last password you remember',
+  'recover.continue': 'Continue',
+  'recover.forgotItEmail': "I forgot it — email me a link instead",
+  'recover.verifyingLink': 'Checking your link…',
+  'recover.newTitle': 'Set a new password',
+  'recover.newPasswordLabel': 'New password',
+  'recover.confirmPasswordLabel': 'Type it again to confirm',
+  'recover.mismatch': "The passwords don't match.",
+  'recover.tooShort': 'Password must be at least 6 characters.',
+  'recover.savePassword': 'Save new password',
+  'recover.doneTitle': 'All done!',
+  'recover.doneBody': 'Your password has been changed. You can log in with it now.',
+  'recover.goLogin': 'Go to login',
 
   'waiting.title': "You're almost in!",
   'waiting.message':
@@ -338,6 +353,21 @@ const vi: Dict = {
   'recover.kidNote':
     'Các bé: hãy nhờ bố mẹ đặt lại mật khẩu trong mục Gia đình.',
   'recover.badEmail': 'Vui lòng nhập email hợp lệ.',
+  'recover.rememberIntro':
+    'Nếu bạn vẫn nhớ một mật khẩu từng dùng, hãy nhập vào đây và đặt mật khẩu mới ngay.',
+  'recover.oldPasswordLabel': 'Mật khẩu gần nhất bạn nhớ',
+  'recover.continue': 'Tiếp tục',
+  'recover.forgotItEmail': 'Tôi quên rồi — gửi liên kết qua email',
+  'recover.verifyingLink': 'Đang kiểm tra liên kết…',
+  'recover.newTitle': 'Đặt mật khẩu mới',
+  'recover.newPasswordLabel': 'Mật khẩu mới',
+  'recover.confirmPasswordLabel': 'Nhập lại để xác nhận',
+  'recover.mismatch': 'Mật khẩu không khớp.',
+  'recover.tooShort': 'Mật khẩu phải có ít nhất 6 ký tự.',
+  'recover.savePassword': 'Lưu mật khẩu mới',
+  'recover.doneTitle': 'Hoàn tất!',
+  'recover.doneBody': 'Mật khẩu của bạn đã được thay đổi. Bây giờ bạn có thể đăng nhập.',
+  'recover.goLogin': 'Đến trang đăng nhập',
 
   'waiting.title': 'Sắp xong rồi!',
   'waiting.message':

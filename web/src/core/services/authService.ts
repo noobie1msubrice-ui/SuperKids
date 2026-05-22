@@ -2,6 +2,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
   signOut,
   onAuthStateChanged,
   updateProfile,
@@ -43,6 +45,9 @@ function mapAuthError(err: unknown): AppError {
     'auth/wrong-password': 'Wrong email or password.',
     'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
     'auth/network-request-failed': 'You need internet to sign in.',
+    'auth/expired-action-code': 'This reset link has expired. Please request a new one.',
+    'auth/invalid-action-code': 'This reset link is invalid or already used. Please request a new one.',
+    'auth/requires-recent-login': 'Please sign in again, then change your password.',
   };
   return new AppError(code, messages[code] ?? 'Could not sign in. Try again.');
 }
@@ -170,10 +175,57 @@ export const authService = {
     await signOut(auth);
   },
 
-  /** Sends a password-reset email (Firebase-hosted reset link). */
+  /** Sends a password-reset email; the link lands back in the app at /recover. */
   async sendPasswordReset(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email.trim());
+    } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /**
+   * Verifies the password the user *thinks* they still remember by signing in
+   * with it. On success the user is signed in, so {@link setNewPassword} can
+   * change the password right away. Throws a friendly error if it's wrong.
+   */
+  async verifyOldPassword(email: string, password: string): Promise<void> {
+    try {
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+    } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /** Sets a new password for the currently signed-in user. */
+  async setNewPassword(newPassword: string): Promise<void> {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new AppError('auth/no-user', 'Your session expired. Please start again.');
+    }
+    try {
+      await updatePassword(user, newPassword);
+    } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /**
+   * Validates a password-reset code from an email link and returns the email
+   * it belongs to. Throws if the link is expired or already used.
+   */
+  async verifyResetCode(oobCode: string): Promise<string> {
+    try {
+      return await verifyPasswordResetCode(auth, oobCode);
+    } catch (err) {
+      throw mapAuthError(err);
+    }
+  },
+
+  /** Completes a reset-by-email: sets the new password using the email code. */
+  async confirmReset(oobCode: string, newPassword: string): Promise<void> {
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
     } catch (err) {
       throw mapAuthError(err);
     }
